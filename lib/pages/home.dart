@@ -1,6 +1,7 @@
 // ignore_for_file: override_on_non_overriding_member
 
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/pages/details.dart';
 import 'package:groceryease_delivery_application/widgets/show_item.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
@@ -15,6 +16,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         margin: EdgeInsets.only(top: 50, left: 10),
         child: SingleChildScrollView(
@@ -55,25 +57,31 @@ class _HomeState extends State<Home> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    Container(
-                      margin: EdgeInsets.all(4),
-                      child: Material(
-                        elevation: 5,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          padding: EdgeInsets.all(14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/images/dish.png',
-                                  height: 150, width: 150, fit: BoxFit.cover),
-                              Text("Half Fry",
-                                  style: AppWidgets.semiBoldTextFieldStyle()),
-                              Text("Fresh and Healthy",
-                                  style: AppWidgets.lightTextFieldStyle()),
-                              Text("\$25",
-                                  style: AppWidgets.semiBoldTextFieldStyle()),
-                            ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Details()));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(4),
+                        child: Material(
+                          elevation: 5,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/images/dish.png',
+                                    height: 150, width: 150, fit: BoxFit.cover),
+                                Text("Half Fry",
+                                    style: AppWidgets.semiBoldTextFieldStyle()),
+                                Text("Fresh and Healthy",
+                                    style: AppWidgets.lightTextFieldStyle()),
+                                Text("\$25",
+                                    style: AppWidgets.semiBoldTextFieldStyle()),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -103,41 +111,47 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(height: 30),
-              Container(
-                margin: EdgeInsets.only(right: 20),
-                child: Material(
-                  elevation: 5,
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset('assets/images/cheese.png',
-                            width: 120, height: 120),
-                        SizedBox(width: 20),
-                        Column(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2,
-                              child: Text("NIDO Milk",
-                                  style: AppWidgets.semiBoldTextFieldStyle()),
-                            ),
-                            SizedBox(height: 5),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2,
-                              child: Text("Fresh Milk Powder",
-                                  style: AppWidgets.lightTextFieldStyle()),
-                            ),
-                            SizedBox(height: 5),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2,
-                              child: Text("\$10",
-                                  style: AppWidgets.semiBoldTextFieldStyle()),
-                            ),
-                          ],
-                        )
-                      ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Details()));
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 20),
+                  child: Material(
+                    elevation: 5,
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.asset('assets/images/cheese.png',
+                              width: 120, height: 120),
+                          SizedBox(width: 20),
+                          Column(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text("NIDO Milk",
+                                    style: AppWidgets.semiBoldTextFieldStyle()),
+                              ),
+                              SizedBox(height: 5),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text("Fresh Milk Powder",
+                                    style: AppWidgets.lightTextFieldStyle()),
+                              ),
+                              SizedBox(height: 5),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text("\$10",
+                                    style: AppWidgets.semiBoldTextFieldStyle()),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
