@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/forgot_password.dart';
 import 'package:groceryease_delivery_application/pages/registration/signup.dart';
+import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class LogIn extends StatefulWidget {
@@ -46,35 +47,35 @@ class _LogInState extends State<LogIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          child: Stack(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 2.5,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                      Color(0xffB7DFF5),
-                      Color(0xffD3B0E0),
-                    ])),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height / 3),
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40))),
-                child: Text(""),
-              ),
-              Container(
+      body: Container(
+        child: Stack(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 2.5,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                    Color(0xffB7DFF5),
+                    Color(0xffD3B0E0),
+                  ])),
+            ),
+            Container(
+              margin:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+              height: MediaQuery.of(context).size.height / 2,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40))),
+              child: Text(""),
+            ),
+            SingleChildScrollView(
+              child: Container(
                 child: Column(
                   children: [
                     Center(
@@ -86,19 +87,19 @@ class _LogInState extends State<LogIn> {
                     SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.all(20),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height / 2,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Form(
-                            key: _formkey,
-                            child: SingleChildScrollView(
+                      child: WebResponsive(
+                        child: Material(
+                          elevation: 5.0,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height / 1.5,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Form(
+                              key: _formkey,
                               child: Column(
                                 children: [
                                   SizedBox(height: 20.0),
@@ -162,7 +163,7 @@ class _LogInState extends State<LogIn> {
                                                 fontWeight: FontWeight.bold))),
                                   ),
                                   SizedBox(
-                                    height: 80.0,
+                                    height: 40.0,
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -198,6 +199,36 @@ class _LogInState extends State<LogIn> {
                                       ),
                                     ),
                                   ),
+                                  SizedBox(height: 40.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Don't have an account? ",
+                                        style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 14,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SignUp()));
+                                          },
+                                          child: Text("Sign up",
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 18,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  fontWeight: FontWeight.bold)))
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -205,34 +236,11 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: AppWidgets.semiBoldTextFieldStyle(),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SignUp()));
-                            },
-                            child: Text("Sign up",
-                                style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    decoration: TextDecoration.underline,
-                                    fontWeight: FontWeight.bold)))
-                      ],
-                    )
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

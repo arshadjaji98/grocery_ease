@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
+import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
@@ -78,7 +79,7 @@ class _SignUpState extends State<SignUp> {
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2.5,
+              height: MediaQuery.of(context).size.height / 2,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -111,156 +112,166 @@ class _SignUpState extends State<SignUp> {
                     SizedBox(height: 30.0),
                     Padding(
                       padding: const EdgeInsets.all(8),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(20),
-                        child: SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height / 1,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Form(
-                              key: _formkey,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 30.0),
-                                    Text(
-                                      "Sign up",
-                                      style: AppWidgets.headerTextFieldStyle(),
-                                    ),
-                                    SizedBox(height: 30.0),
-                                    TextFormField(
-                                      controller: namecontroller,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter Name';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                          hintText: 'Name',
-                                          hintStyle: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          prefixIcon:
-                                              Icon(Icons.person_outlined)),
-                                    ),
-                                    SizedBox(height: 30.0),
-                                    TextFormField(
-                                      controller: phonecontroller,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter Phone Number';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                          hintText: 'Phone',
-                                          hintStyle: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          prefixIcon: Icon(
-                                              Icons.phone_android_outlined)),
-                                    ),
-                                    SizedBox(height: 30.0),
-                                    TextFormField(
-                                      controller: mailcontroller,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter E-mail';
-                                        }
-                                        return null;
-                                      },
-                                      decoration: InputDecoration(
-                                          hintText: 'Email',
-                                          hintStyle: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          prefixIcon:
-                                              Icon(Icons.email_outlined)),
-                                    ),
-                                    SizedBox(height: 30.0),
-                                    TextFormField(
-                                      controller: passwordcontroller,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter Password';
-                                        }
-                                        return null;
-                                      },
-                                      obscureText: true,
-                                      decoration: InputDecoration(
-                                          hintText: 'Password',
-                                          hintStyle: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          prefixIcon:
-                                              Icon(Icons.password_outlined)),
-                                    ),
-                                    SizedBox(height: 60.0),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        if (_formkey.currentState!.validate()) {
-                                          setState(() {
-                                            email = mailcontroller.text;
-                                            name = namecontroller.text;
-                                            password = passwordcontroller.text;
-                                          });
-                                        }
-                                        registration();
-                                      },
-                                      child: Material(
-                                        elevation: 5.0,
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          width: 200,
-                                          decoration: BoxDecoration(
-                                              color: Color(0Xffff5722),
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Center(
-                                              child: Text(
-                                            "SIGN UP",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18.0,
-                                                fontFamily: 'Poppins1',
-                                                fontWeight: FontWeight.bold),
-                                          )),
+                      child: WebResponsive(
+                        child: Material(
+                          elevation: 5.0,
+                          borderRadius: BorderRadius.circular(20),
+                          child: SingleChildScrollView(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height / 1,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Form(
+                                key: _formkey,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 30.0),
+                                      Text(
+                                        "Sign up",
+                                        style:
+                                            AppWidgets.headerTextFieldStyle(),
+                                      ),
+                                      SizedBox(height: 30.0),
+                                      TextFormField(
+                                        controller: namecontroller,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Enter Name';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Name',
+                                            hintStyle: AppWidgets
+                                                .semiBoldTextFieldStyle(),
+                                            prefixIcon:
+                                                Icon(Icons.person_outlined)),
+                                      ),
+                                      SizedBox(height: 30.0),
+                                      TextFormField(
+                                        controller: phonecontroller,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Enter Phone Number';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Phone',
+                                            hintStyle: AppWidgets
+                                                .semiBoldTextFieldStyle(),
+                                            prefixIcon: Icon(
+                                                Icons.phone_android_outlined)),
+                                      ),
+                                      SizedBox(height: 30.0),
+                                      TextFormField(
+                                        controller: mailcontroller,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Enter E-mail';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Email',
+                                            hintStyle: AppWidgets
+                                                .semiBoldTextFieldStyle(),
+                                            prefixIcon:
+                                                Icon(Icons.email_outlined)),
+                                      ),
+                                      SizedBox(height: 30.0),
+                                      TextFormField(
+                                        controller: passwordcontroller,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Enter Password';
+                                          }
+                                          return null;
+                                        },
+                                        obscureText: true,
+                                        decoration: InputDecoration(
+                                            hintText: 'Password',
+                                            hintStyle: AppWidgets
+                                                .semiBoldTextFieldStyle(),
+                                            prefixIcon:
+                                                Icon(Icons.password_outlined)),
+                                      ),
+                                      SizedBox(height: 60.0),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (_formkey.currentState!
+                                              .validate()) {
+                                            setState(() {
+                                              email = mailcontroller.text;
+                                              name = namecontroller.text;
+                                              password =
+                                                  passwordcontroller.text;
+                                            });
+                                          }
+                                          registration();
+                                        },
+                                        child: Material(
+                                          elevation: 5.0,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            width: 200,
+                                            decoration: BoxDecoration(
+                                                color: Color(0Xffff5722),
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: Center(
+                                                child: Text(
+                                              "SIGN UP",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18.0,
+                                                  fontFamily: 'Poppins1',
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(height: 40.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Don't have an account? ",
-                                          style: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                        ),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          LogIn()));
-                                            },
-                                            child: Text("Login",
-                                                style: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    fontSize: 16,
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                    fontWeight:
-                                                        FontWeight.bold)))
-                                      ],
-                                    )
-                                  ],
+                                      SizedBox(height: 40.0),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Don't have an account? ",
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 14,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LogIn()));
+                                              },
+                                              child: const Text("Login",
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 18,
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontWeight:
+                                                          FontWeight.bold)))
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

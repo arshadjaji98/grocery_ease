@@ -17,7 +17,6 @@ class _OnboardState extends State<Onboard> {
   @override
   void initState() {
     _controller = PageController(initialPage: 0);
-
     super.initState();
   }
 
@@ -29,44 +28,51 @@ class _OnboardState extends State<Onboard> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Column(
         children: [
           Expanded(
             child: PageView.builder(
-                controller: _controller,
-                itemCount: contents.length,
-                onPageChanged: (int index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                itemBuilder: (_, i) {
-                  return Padding(
-                    padding:
-                        EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          contents[i].image,
-                          height: 450,
-                          width: MediaQuery.of(context).size.width,
-                          fit: BoxFit.fill,
+              controller: _controller,
+              itemCount: contents.length,
+              onPageChanged: (int index) {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
+              itemBuilder: (_, i) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        contents[i].image,
+                        height: 450,
+                        width: 350,
+                        fit: BoxFit.fill,
+                      ),
+                      Text(
+                        contents[i].title,
+                        style: AppWidgets.headerTextFieldStyle().copyWith(
+                          fontSize: screenHeight * 0.03, // Responsive text size
                         ),
-                        SizedBox(height: 40.0),
-                        Text(
-                          contents[i].title,
-                          style: AppWidgets.headerTextFieldStyle(),
+                      ),
+                      // SizedBox(height: 20.0),
+                      Text(
+                        contents[i].description,
+                        style: AppWidgets.lightTextFieldStyle().copyWith(
+                          fontSize: screenHeight * 0.02, // Responsive text size
                         ),
-                        SizedBox(height: 20.0),
-                        Text(
-                          contents[i].description,
-                          style: AppWidgets.lightTextFieldStyle(),
-                        )
-                      ],
-                    ),
-                  );
-                }),
+                        textAlign: TextAlign.center, // Centering the text
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
           Container(
             child: Row(
@@ -89,21 +95,24 @@ class _OnboardState extends State<Onboard> {
             },
             child: Container(
               decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(20)),
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(20),
+              ),
               height: 60,
               margin: EdgeInsets.all(40),
-              width: double.infinity,
+              width: 200,
               child: Center(
                 child: Text(
                   currentIndex == contents.length - 1 ? "Start" : "Next",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: screenHeight * 0.025, // Responsive text size
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

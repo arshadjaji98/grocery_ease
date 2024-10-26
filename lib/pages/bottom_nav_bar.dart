@@ -14,22 +14,21 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int currentTab = 0;
-  late List<Widget> pages;
-  late Widget currentPage;
-  late Home homePage;
-  late Profile profile;
-  late Order order;
-  late Wallet wallet;
 
-  @override
-  void initState() {
-    homePage = Home();
-    profile = Profile();
-    order = Order();
-    wallet = Wallet();
-    currentPage = homePage;
-    pages = [homePage, profile, order, wallet];
-    super.initState();
+  // This function creates a new instance for each screen when called.
+  Widget getPage(int index) {
+    switch (index) {
+      case 0:
+        return Home();
+      case 1:
+        return Order();
+      case 2:
+        return Wallet();
+      case 3:
+        return Profile();
+      default:
+        return Home();
+    }
   }
 
   @override
@@ -43,7 +42,6 @@ class _BottomNavState extends State<BottomNav> {
         onTap: (int index) {
           setState(() {
             currentTab = index;
-            currentPage = pages[currentTab];
           });
         },
         items: [
@@ -53,7 +51,7 @@ class _BottomNavState extends State<BottomNav> {
           Icon(Icons.person_outlined, color: Colors.white)
         ],
       ),
-      body: pages[currentTab],
+      body: getPage(currentTab),
     );
   }
 }
