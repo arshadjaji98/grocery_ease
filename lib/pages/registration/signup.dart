@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/admin/admin_login.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
+import 'package:groceryease_delivery_application/services/database_services.dart';
+import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
@@ -41,13 +44,14 @@ class _SignUpState extends State<SignUp> {
           "Name": namecontroller.text,
           "Email": mailcontroller.text,
           "Wallet": "0",
+          "Phone": phonecontroller.text,
           "Id": Id,
         };
-        // await DatabaseMethods().addUserDetail(addUserInfo, Id);
-        // await SharedPreferenceHelper().saveUserName(namecontroller.text);
-        // await SharedPreferenceHelper().saveUserEmail(mailcontroller.text);
-        // await SharedPreferenceHelper().saveUserWallet('0');
-        // await SharedPreferenceHelper().saveUserId(Id);
+        await DatabaseServices().addUserDetail(addUserInfo, Id);
+        await SharedPerfHelper().saveUserName(namecontroller.text);
+        await SharedPerfHelper().saveUserEmail(mailcontroller.text);
+        await SharedPerfHelper().saveUserWallet('0');
+        await SharedPerfHelper().saveUserId(Id);
 
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => BottomNav()));
@@ -267,9 +271,44 @@ class _SignUpState extends State<SignUp> {
                                                       decoration: TextDecoration
                                                           .underline,
                                                       fontWeight:
-                                                          FontWeight.bold)))
+                                                          FontWeight.bold))),
                                         ],
-                                      )
+                                      ),
+                                      Text(
+                                        "OR",
+                                        style: AppWidgets.boldTextFieldStyle(),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Register as an Admin ",
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 14,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AdminLogin()));
+                                              },
+                                              child: const Text("Admin Login",
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 18,
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontWeight:
+                                                          FontWeight.bold))),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),

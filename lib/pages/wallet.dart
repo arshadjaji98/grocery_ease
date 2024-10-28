@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Wallet extends StatefulWidget {
@@ -107,6 +108,24 @@ class _WalletState extends State<Wallet> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 50),
+            WebResponsive(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 12),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Color(0xFF008080),
+                ),
+                child: Center(
+                  child: Text(
+                    "Add Money",
+                    style:
+                        TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                  ),
+                ),
+              ),
             )
           ],
         ),
