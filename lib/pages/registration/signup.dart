@@ -57,7 +57,7 @@ class _SignUpState extends State<SignUp> {
             context, MaterialPageRoute(builder: (context) => BottomNav()));
       } on FirebaseException catch (e) {
         if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
                 "Password Provided is too Weak",
@@ -85,13 +85,8 @@ class _SignUpState extends State<SignUp> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2,
               decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                    Color(0xffB7DFF5),
-                    Color(0xffD3B0E0),
-                  ])),
+                color: Color(0XFF8a4af3),
+              ),
             ),
             Container(
               margin:
@@ -227,7 +222,7 @@ class _SignUpState extends State<SignUp> {
                                                 vertical: 8.0),
                                             width: 200,
                                             decoration: BoxDecoration(
-                                                color: Color(0Xffff5722),
+                                                color: Color(0XFF8a4af3),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
                                             child: Center(

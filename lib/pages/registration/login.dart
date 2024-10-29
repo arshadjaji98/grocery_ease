@@ -54,13 +54,8 @@ class _LogInState extends State<LogIn> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
               decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                    Color(0xffB7DFF5),
-                    Color(0xffD3B0E0),
-                  ])),
+                color: Color(0XFF8a4af3),
+              ),
             ),
             Container(
               margin:
@@ -184,7 +179,7 @@ class _LogInState extends State<LogIn> {
                                             EdgeInsets.symmetric(vertical: 8.0),
                                         width: 200,
                                         decoration: BoxDecoration(
-                                            color: Color(0Xffff5722),
+                                            color: Color(0XFF8a4af3),
                                             borderRadius:
                                                 BorderRadius.circular(20)),
                                         child: Center(
