@@ -1,45 +1,50 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/admin/admin_login.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/services/database_services.dart';
 import 'package:groceryease_delivery_application/services/shared_perf.dart';
+import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  final void Function()? onTap;
+  const SignUp({super.key, this.onTap});
 
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  bool _isLoading = false;
   String email = "", password = "", name = "", phone = "";
 
-  TextEditingController namecontroller = new TextEditingController();
-  TextEditingController phonecontroller = new TextEditingController();
-  TextEditingController passwordcontroller = new TextEditingController();
-  TextEditingController mailcontroller = new TextEditingController();
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController phonecontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController mailcontroller = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
   registration() async {
-    // ignore: unnecessary_null_comparison
-    if (password != null) {
+    setState(() {
+      _isLoading = true;
+    });
+
+    if (password.isNotEmpty) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
-        ScaffoldMessenger.of(context).showSnackBar((const SnackBar(
-            backgroundColor: Colors.pink,
-            content: Text(
-              "Registered Successfully",
-              style: TextStyle(fontSize: 20.0),
-            ))));
+        Utils.toastMessage("Registered Successfully");
+
         String Id = randomAlphaNumeric(10);
+
+        String user = mailcontroller.text.replaceAll("@gmail.com", "replace");
         Map<String, dynamic> addUserInfo = {
           "Name": namecontroller.text,
           "Email": mailcontroller.text,
@@ -47,31 +52,28 @@ class _SignUpState extends State<SignUp> {
           "Phone": phonecontroller.text,
           "Id": Id,
         };
+
         await DatabaseServices().addUserDetail(addUserInfo, Id);
         await SharedPerfHelper().saveUserName(namecontroller.text);
         await SharedPerfHelper().saveUserEmail(mailcontroller.text);
         await SharedPerfHelper().saveUserWallet('0');
         await SharedPerfHelper().saveUserId(Id);
 
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => BottomNav()));
-      } on FirebaseException catch (e) {
-        if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Password Provided is too Weak",
-                style: TextStyle(fontSize: 18.0),
-              )));
-        } else if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Account Already exsists",
-                style: TextStyle(fontSize: 18.0),
-              )));
-        }
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const BottomNav()));
+      } on FirebaseAuthException catch (e) {
+        Utils.toastMessage(e.toString());
+      } catch (e) {
+        Utils.toastMessage(e.toString());
+      } finally {
+        setState(() {
+          _isLoading = false; // End loading
+        });
       }
+    } else {
+      setState(() {
+        _isLoading = false; // End loading if password is empty
+      });
     }
   }
 
@@ -93,12 +95,12 @@ class _SignUpState extends State<SignUp> {
                   EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40))),
-              child: Text(""),
+              child: const Text(""),
             ),
             SingleChildScrollView(
               child: Container(
@@ -108,7 +110,7 @@ class _SignUpState extends State<SignUp> {
                         child: Image.asset("assets/images/text logo.png",
                             width: MediaQuery.of(context).size.width,
                             height: 200)),
-                    SizedBox(height: 30.0),
+                    const SizedBox(height: 30.0),
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: WebResponsive(
@@ -117,7 +119,8 @@ class _SignUpState extends State<SignUp> {
                           borderRadius: BorderRadius.circular(20),
                           child: SingleChildScrollView(
                             child: Container(
-                              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                              padding: const EdgeInsets.only(
+                                  left: 20.0, right: 20.0),
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height / 1,
                               decoration: BoxDecoration(
@@ -128,13 +131,13 @@ class _SignUpState extends State<SignUp> {
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      SizedBox(height: 30.0),
+                                      const SizedBox(height: 30.0),
                                       Text(
                                         "Sign up",
                                         style:
                                             AppWidgets.headerTextFieldStyle(),
                                       ),
-                                      SizedBox(height: 30.0),
+                                      const SizedBox(height: 30.0),
                                       TextFormField(
                                         controller: namecontroller,
                                         validator: (value) {
@@ -147,11 +150,12 @@ class _SignUpState extends State<SignUp> {
                                             hintText: 'Name',
                                             hintStyle: AppWidgets
                                                 .semiBoldTextFieldStyle(),
-                                            prefixIcon:
-                                                Icon(Icons.person_outlined)),
+                                            prefixIcon: const Icon(
+                                                Icons.person_outlined)),
                                       ),
-                                      SizedBox(height: 30.0),
+                                      const SizedBox(height: 30.0),
                                       TextFormField(
+                                        keyboardType: TextInputType.number,
                                         controller: phonecontroller,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
@@ -163,10 +167,10 @@ class _SignUpState extends State<SignUp> {
                                             hintText: 'Phone',
                                             hintStyle: AppWidgets
                                                 .semiBoldTextFieldStyle(),
-                                            prefixIcon: Icon(
+                                            prefixIcon: const Icon(
                                                 Icons.phone_android_outlined)),
                                       ),
-                                      SizedBox(height: 30.0),
+                                      const SizedBox(height: 30.0),
                                       TextFormField(
                                         controller: mailcontroller,
                                         validator: (value) {
@@ -179,10 +183,10 @@ class _SignUpState extends State<SignUp> {
                                             hintText: 'Email',
                                             hintStyle: AppWidgets
                                                 .semiBoldTextFieldStyle(),
-                                            prefixIcon:
-                                                Icon(Icons.email_outlined)),
+                                            prefixIcon: const Icon(
+                                                Icons.email_outlined)),
                                       ),
-                                      SizedBox(height: 30.0),
+                                      const SizedBox(height: 30.0),
                                       TextFormField(
                                         controller: passwordcontroller,
                                         validator: (value) {
@@ -196,10 +200,10 @@ class _SignUpState extends State<SignUp> {
                                             hintText: 'Password',
                                             hintStyle: AppWidgets
                                                 .semiBoldTextFieldStyle(),
-                                            prefixIcon:
-                                                Icon(Icons.password_outlined)),
+                                            prefixIcon: const Icon(
+                                                Icons.password_outlined)),
                                       ),
-                                      SizedBox(height: 60.0),
+                                      const SizedBox(height: 60.0),
                                       GestureDetector(
                                         onTap: () async {
                                           if (_formkey.currentState!
@@ -210,39 +214,48 @@ class _SignUpState extends State<SignUp> {
                                               password =
                                                   passwordcontroller.text;
                                             });
+                                            await registration();
                                           }
-                                          registration();
                                         },
                                         child: Material(
                                           elevation: 5.0,
                                           borderRadius:
                                               BorderRadius.circular(20),
                                           child: Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 vertical: 8.0),
                                             width: 200,
                                             decoration: BoxDecoration(
-                                                color: Color(0XFF8a4af3),
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: Center(
-                                                child: Text(
-                                              "SIGN UP",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0,
-                                                  fontFamily: 'Poppins1',
-                                                  fontWeight: FontWeight.bold),
-                                            )),
+                                              color: const Color(0XFF8a4af3),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: _isLoading
+                                                ? const Center(
+                                                    child: SpinKitWave(
+                                                        size: 20,
+                                                        color: Colors.white))
+                                                : const Center(
+                                                    child: Text(
+                                                      "SIGN IN",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 18.0,
+                                                        fontFamily: 'Poppins1',
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 40.0),
+                                      const SizedBox(height: 40.0),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
+                                          const Text(
                                             "Don't have an account? ",
                                             style: TextStyle(
                                                 fontFamily: 'Poppins',
@@ -257,7 +270,7 @@ class _SignUpState extends State<SignUp> {
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            LogIn()));
+                                                            const LogIn()));
                                               },
                                               child: const Text("Login",
                                                   style: TextStyle(
@@ -277,7 +290,7 @@ class _SignUpState extends State<SignUp> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
+                                          const Text(
                                             "Register as an Admin ",
                                             style: TextStyle(
                                                 fontFamily: 'Poppins',
@@ -292,12 +305,12 @@ class _SignUpState extends State<SignUp> {
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            AdminLogin()));
+                                                            const AdminLogin()));
                                               },
                                               child: const Text("Admin Login",
                                                   style: TextStyle(
                                                       fontFamily: 'Poppins',
-                                                      fontSize: 18,
+                                                      fontSize: 16,
                                                       decoration: TextDecoration
                                                           .underline,
                                                       fontWeight:
@@ -316,7 +329,7 @@ class _SignUpState extends State<SignUp> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

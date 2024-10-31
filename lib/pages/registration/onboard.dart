@@ -4,7 +4,8 @@ import 'package:groceryease_delivery_application/widgets/content_model.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Onboard extends StatefulWidget {
-  const Onboard({super.key});
+  final void Function()? onTap;
+  const Onboard({super.key, this.onTap});
 
   @override
   State<Onboard> createState() => _OnboardState();
@@ -35,43 +36,52 @@ class _OnboardState extends State<Onboard> {
       body: Column(
         children: [
           Expanded(
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: contents.length,
-              onPageChanged: (int index) {
-                setState(() {
-                  currentIndex = index;
-                });
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                // Prevent horizontal drag (swipe)
+                if (details.delta.dx > 0 || details.delta.dx < 0) {
+                  return; // Do nothing, prevent swipe
+                }
               },
-              itemBuilder: (_, i) {
-                return Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        contents[i].image,
-                        height: 450,
-                        width: 350,
-                        fit: BoxFit.fill,
-                      ),
-                      Text(
-                        contents[i].title,
-                        style: AppWidgets.headerTextFieldStyle().copyWith(
-                          fontSize: screenHeight * 0.03, // Responsive text size
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: contents.length,
+                onPageChanged: (int index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                itemBuilder: (_, i) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          contents[i].image,
+                          height: 450,
+                          width: 350,
+                          fit: BoxFit.fill,
                         ),
-                      ),
-                      // SizedBox(height: 20.0),
-                      Text(
-                        contents[i].description,
-                        style: AppWidgets.lightTextFieldStyle().copyWith(
-                          fontSize: screenHeight * 0.02, // Responsive text size
+                        Text(
+                          contents[i].title,
+                          style: AppWidgets.headerTextFieldStyle().copyWith(
+                            fontSize:
+                                screenHeight * 0.03, // Responsive text size
+                          ),
                         ),
-                        textAlign: TextAlign.center, // Centering the text
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        Text(
+                          contents[i].description,
+                          style: AppWidgets.lightTextFieldStyle().copyWith(
+                            fontSize:
+                                screenHeight * 0.02, // Responsive text size
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           Container(

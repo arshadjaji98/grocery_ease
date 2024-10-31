@@ -1,6 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:groceryease_delivery_application/pages/favorite.dart';
 import 'package:groceryease_delivery_application/services/database_services.dart';
 import 'package:groceryease_delivery_application/services/shared_perf.dart';
+import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
@@ -49,21 +53,72 @@ class _DetailsState extends State<Details> {
           children: [
             Stack(
               children: [
-                Image.network(
-                  widget.image,
+                CachedNetworkImage(
+                  imageUrl: widget.image,
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height / 2.5,
                   fit: BoxFit.fill,
-                ),
-                Positioned(
-                  top: 20, // Adjust this for vertical positioning
-                  left: 10, // Adjust this for horizontal positioning
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
+                  placeholder: (context, url) => const Center(
+                    child: SpinKitWave(
+                      color: Color(0XFF8a4af3),
+                      size: 50.0,
+                    ),
                   ),
+                  errorWidget: (context, url, error) => const Center(
+                    child: Icon(Icons.error),
+                  ),
+                ),
+                Stack(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: widget.image,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height / 2.5,
+                      fit: BoxFit.fill,
+                      placeholder: (context, url) => const Center(
+                        child: SpinKitWave(
+                          color: Color(0XFF8a4af3),
+                          size: 50.0,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.error),
+                      ),
+                    ),
+                    Positioned(
+                      top: 20,
+                      left: 10,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.67),
+                          Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.favorite,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -76,7 +131,7 @@ class _DetailsState extends State<Details> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.name,
-                          style: AppWidgets.semiBoldTextFieldStyle()),
+                          style: AppWidgets.headerTextFieldStyle()),
                     ],
                   ),
                   const Spacer(),
@@ -90,14 +145,13 @@ class _DetailsState extends State<Details> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: const Color(0XFF8a4af3),
                           borderRadius: BorderRadius.circular(5)),
                       child: const Icon(Icons.remove, color: Colors.white),
                     ),
                   ),
                   const SizedBox(width: 20),
-                  Text(a.toString(),
-                      style: AppWidgets.semiBoldTextFieldStyle()),
+                  Text(a.toString(), style: AppWidgets.boldTextFieldStyle()),
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
@@ -107,7 +161,7 @@ class _DetailsState extends State<Details> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: const Color(0XFF8a4af3),
                           borderRadius: BorderRadius.circular(5)),
                       child: const Icon(Icons.add, color: Colors.white),
                     ),
@@ -121,6 +175,7 @@ class _DetailsState extends State<Details> {
               child: Text(
                 widget.details,
                 maxLines: 4,
+                style: AppWidgets.lightTextFieldStyle(),
               ),
             ),
             const SizedBox(height: 20),
@@ -163,40 +218,33 @@ class _DetailsState extends State<Details> {
                       };
                       await DatabaseServices()
                           .addFoodtoCart(addFoodToCart, id!);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        backgroundColor: Colors.orange,
-                        content: Text(
-                          "Food added to Cart Successfully",
-                          style: TextStyle(fontSize: 20.0, color: Colors.white),
-                        ),
-                      ));
+                      Utils.toastMessage("Food added to Cart Successfully");
+                      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      //   backgroundColor: Colors.orange,
+                      //   content: Text(
+                      //     "Food added to Cart Successfully",
+                      //     style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      //   ),
+                      // ));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width / 2,
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.only(
+                          top: 10, bottom: 10, right: 5, left: 5),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: const Color(0XFF8a4af3),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             "Add to Cart",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Poppins',
-                                fontSize: 18),
+                                fontSize: 20),
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: const Icon(Icons.shopping_cart_outlined,
-                                color: Colors.white),
-                          ),
-                          const SizedBox(width: 10),
                         ],
                       ),
                     ),

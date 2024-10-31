@@ -5,8 +5,9 @@ class SharedPerfHelper {
   static String userNameKey = "USERNAME";
   static String userEmailKey = "USEREMAIL";
   static String userWalletKey = "USERWALLETKEY";
-  static String userPhoneKey = "USERPHONE";
+  static String userPhoneKey = "USERPHONEKEY";
   static String userProfileKey = "USERPROFILEKEY";
+  static String userAddressKey = "USERADDRESSKEY"; // New key for address
 
   Future<bool> saveUserId(String getUserId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,6 +39,12 @@ class SharedPerfHelper {
     return prefs.setString(userProfileKey, getUserProfile);
   }
 
+  // New method to save user address
+  Future<bool> saveUserAddress(String getUserAddress) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(userAddressKey, getUserAddress);
+  }
+
   Future<String?> getUserId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString(userIdKey);
@@ -66,5 +73,11 @@ class SharedPerfHelper {
   Future<String?> getUserProfile() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString(userProfileKey);
+  }
+
+  // New method to retrieve user address
+  Future<String?> getUserAddress() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getString(userAddressKey);
   }
 }

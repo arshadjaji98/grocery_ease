@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/services/shared_perf.dart';
+import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -14,23 +17,24 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String? profile, name, email, phone;
+  String? profile, name, email, phone, address;
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
+  final TextEditingController addressController = TextEditingController();
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
-
-    selectedImage = File(image!.path);
-    setState(() {
-      uploadItem();
-    });
+    if (image != null) {
+      selectedImage = File(image.path);
+      setState(() {
+        uploadItem();
+      });
+    }
   }
 
   uploadItem() async {
     if (selectedImage != null) {
       String addId = randomAlphaNumeric(10);
-
       Reference firebaseStorageRef =
           FirebaseStorage.instance.ref().child("blogImages").child(addId);
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
@@ -46,7 +50,19 @@ class _ProfileState extends State<Profile> {
     name = await SharedPerfHelper().getUserName();
     email = await SharedPerfHelper().getUserEmail();
     phone = await SharedPerfHelper().getUserPhone();
+    address = await SharedPerfHelper().getUserAddress(); // Fetch address
+    addressController.text = address ?? ''; // Set address field
     setState(() {});
+  }
+
+  saveAddress() async {
+    String newAddress = addressController.text.trim();
+    if (newAddress.isNotEmpty) {
+      await SharedPerfHelper().saveUserAddress(newAddress);
+      FirebaseFirestore.instance.collection('users');
+      setState(() {});
+      Utils.toastMessage("Address saved successfully");
+    }
   }
 
   onthisload() async {
@@ -64,21 +80,23 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: name == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: Center(child: SpinKitWave(color: Color(0XFF8a4af3))),
+            )
           : Container(
-              margin: EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 10),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     Stack(
                       children: [
                         Container(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 45.0, left: 20.0, right: 20.0),
                           height: MediaQuery.of(context).size.height / 4.3,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
-                              color: Color(0XFF8a4af3),
+                              color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.vertical(
                                   bottom: Radius.elliptical(
                                       MediaQuery.of(context).size.width,
@@ -123,13 +141,13 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 70.0),
+                          padding: const EdgeInsets.only(top: 70.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 name!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 23.0,
                                     fontWeight: FontWeight.bold,
@@ -140,35 +158,35 @@ class _ProfileState extends State<Profile> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Material(
                         borderRadius: BorderRadius.circular(10),
                         elevation: 2.0,
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 15.0,
                             horizontal: 10.0,
                           ),
                           decoration: BoxDecoration(
-                              color: Color(0XFF8a4af3),
+                              color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.person,
                                 color: Colors.white,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20.0,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Name",
                                     style: TextStyle(
                                         color: Colors.white,
@@ -177,7 +195,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                   Text(
                                     name!,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w600),
@@ -189,35 +207,35 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30.0,
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Material(
                         borderRadius: BorderRadius.circular(10),
                         elevation: 2.0,
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 15.0,
                             horizontal: 10.0,
                           ),
                           decoration: BoxDecoration(
-                              color: Color(0XFF8a4af3),
+                              color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.phone,
                                 color: Colors.white,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20.0,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Phone",
                                     style: TextStyle(
                                         color: Colors.white,
@@ -226,7 +244,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                   Text(
                                     phone ?? "Not provided",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w600),
@@ -238,35 +256,35 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30.0,
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Material(
                         borderRadius: BorderRadius.circular(10),
                         elevation: 2.0,
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 15.0,
                             horizontal: 10.0,
                           ),
                           decoration: BoxDecoration(
-                              color: Color(0XFF8a4af3),
+                              color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.email,
                                 color: Colors.white,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20.0,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Email",
                                     style: TextStyle(
                                         color: Colors.white,
@@ -275,7 +293,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                   Text(
                                     email!,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w600),
@@ -287,98 +305,90 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 30.0),
-                    GestureDetector(
-                      onTap: () {
-                        // AuthMethods().deleteuser();
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(10),
-                          elevation: 2.0,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15.0,
-                              horizontal: 10.0,
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0XFF8a4af3),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 20.0,
-                                ),
-                                Column(
+                    const SizedBox(height: 30.0),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(10),
+                        elevation: 2.0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15.0,
+                            horizontal: 10.0,
+                          ),
+                          decoration: BoxDecoration(
+                              color: const Color(0XFF8a4af3),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.home,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(
+                                width: 20.0,
+                              ),
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "Delete Account",
+                                    const Text(
+                                      "Address",
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: 20.0,
+                                          fontSize: 16.0,
                                           fontWeight: FontWeight.w600),
-                                    )
+                                    ),
+                                    TextFormField(
+                                      controller: addressController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter your address',
+                                        hintStyle: const TextStyle(
+                                            color: Colors.white54),
+                                        border: InputBorder.none,
+                                      ),
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
                                   ],
-                                )
-                              ],
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // AuthMethods().SignOut();
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(10),
-                          elevation: 2.0,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15.0,
-                              horizontal: 10.0,
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0XFF8a4af3),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.logout,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 20.0,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "LogOut",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w600),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
+                    const SizedBox(height: 20.0),
+                    ElevatedButton(
+                      onPressed: saveAddress,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0,
+                          vertical: 15.0,
                         ),
                       ),
-                    )
+                      child: const Text('Save Address'),
+                    ),
+                    const SizedBox(height: 20.0),
+                    // ElevatedButton(
+                    //   onPressed: () async {
+                    //     await AuthService().signOut();
+                    //     Navigator.of(context).pushAndRemoveUntil(
+                    //       MaterialPageRoute(
+                    //         builder: (context) => const Login(),
+                    //       ),
+                    //       (Route<dynamic> route) => false,
+                    //     );
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     primary: Colors.red,
+                    //     padding: const EdgeInsets.symmetric(
+                    //       horizontal: 40.0,
+                    //       vertical: 15.0,
+                    //     ),
+                    //   ),
+                    //   child: const Text('Sign Out'),
+                    // ),
                   ],
                 ),
               ),
