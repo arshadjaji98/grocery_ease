@@ -45,12 +45,16 @@ class _SignUpState extends State<SignUp> {
         String Id = randomAlphaNumeric(10);
 
         String user = mailcontroller.text.replaceAll("@gmail.com", "replace");
+        String updateusername =
+            user.replaceFirst(user[0], user[0].toUpperCase());
+        String firstletter = user.substring(0, 1).toUpperCase();
         Map<String, dynamic> addUserInfo = {
-          "Name": namecontroller.text,
+          "Name": updateusername,
           "Email": mailcontroller.text,
           "Wallet": "0",
           "Phone": phonecontroller.text,
           "Id": Id,
+          "SearchKey": firstletter
         };
 
         await DatabaseServices().addUserDetail(addUserInfo, Id);
