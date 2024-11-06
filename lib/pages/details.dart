@@ -91,21 +91,30 @@ class _DetailsState extends State<Details> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                          ),
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.67),
                           Container(
                             margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: Colors.white,
                               ),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(Icons.arrow_back, color: Colors.white),
+                            ),
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.65),
+                          Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: IconButton(
                               onPressed: () {},
@@ -132,6 +141,12 @@ class _DetailsState extends State<Details> {
                     children: [
                       Text(widget.name,
                           style: AppWidgets.headerTextFieldStyle()),
+                      SizedBox(height: 50),
+                      Text("\$${total.toString()}",
+                          style: TextStyle(
+                              color: const Color(0XFF8a4af3),
+                              fontFamily: 'Poppins',
+                              fontSize: 23)),
                     ],
                   ),
                   const Spacer(),
@@ -169,16 +184,7 @@ class _DetailsState extends State<Details> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.details,
-                maxLines: 4,
-                style: AppWidgets.lightTextFieldStyle(),
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -190,6 +196,15 @@ class _DetailsState extends State<Details> {
                   const SizedBox(width: 5),
                   const Icon(Icons.alarm, color: Colors.black54),
                 ],
+              ),
+            ),
+            const SizedBox(height: 100),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                widget.details,
+                maxLines: 4,
+                style: AppWidgets.lightTextFieldStyle(),
               ),
             ),
             const Spacer(),
