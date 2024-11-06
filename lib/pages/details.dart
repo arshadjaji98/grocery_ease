@@ -201,10 +201,20 @@ class _DetailsState extends State<Details> {
             const SizedBox(height: 100),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.details,
-                maxLines: 4,
-                style: AppWidgets.lightTextFieldStyle(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "About",
+                    style: AppWidgets.boldTextFieldStyle(),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    widget.details,
+                    maxLines: 4,
+                    style: AppWidgets.lightTextFieldStyle(),
+                  ),
+                ],
               ),
             ),
             const Spacer(),
