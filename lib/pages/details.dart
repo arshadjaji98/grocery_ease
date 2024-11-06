@@ -141,12 +141,12 @@ class _DetailsState extends State<Details> {
                     children: [
                       Text(widget.name,
                           style: AppWidgets.headerTextFieldStyle()),
-                      SizedBox(height: 50),
-                      Text("\$${total.toString()}",
-                          style: TextStyle(
-                              color: const Color(0XFF8a4af3),
-                              fontFamily: 'Poppins',
-                              fontSize: 23)),
+                      // SizedBox(height: 50),
+                      // Text("\$${total.toString()}",
+                      //     style: TextStyle(
+                      //         color: const Color(0XFF8a4af3),
+                      //         fontFamily: 'Poppins',
+                      //         fontSize: 23)),
                     ],
                   ),
                   const Spacer(),
