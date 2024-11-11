@@ -1,33 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseServices {
-  Future addUserDetail(Map<String, dynamic> userInfoMap, String id) async {
-    return await FirebaseFirestore.instance
+  // Adds user details to the 'users' collection with a specified document ID.
+  Future<void> addUserDetail(
+      Map<String, dynamic> userInfoMap, String userId) async {
+    await FirebaseFirestore.instance
         .collection('users')
-        .doc(id)
+        .doc(userId)
         .set(userInfoMap);
   }
 
-  Future addFoodItem(Map<String, dynamic> userInfoMap, String name) async {
-    return await FirebaseFirestore.instance.collection(name).add(userInfoMap);
+  // Adds a food item to a specified collection (e.g., a category name).
+  Future<void> addFoodItem(
+      Map<String, dynamic> foodItemMap, String categoryName) async {
+    await FirebaseFirestore.instance.collection(categoryName).add(foodItemMap);
   }
 
-  Future<Stream<QuerySnapshot>> getFoodItem(String name) async {
-    return await FirebaseFirestore.instance.collection(name).snapshots();
+  Stream<QuerySnapshot> getFoodItem(String categoryName) {
+    return FirebaseFirestore.instance.collection(categoryName).snapshots();
   }
 
-  Future addFoodtoCart(Map<String, dynamic> userInfoMap, String id) async {
-    return await FirebaseFirestore.instance
+  // Adds a food item to a specific user's 'Cart' subcollection.
+  Future<void> addFoodToCart(
+      Map<String, dynamic> foodItemMap, String userId) async {
+    await FirebaseFirestore.instance
         .collection('users')
-        .doc(id)
+        .doc(userId)
         .collection('Cart')
-        .add(userInfoMap);
+        .add(foodItemMap);
   }
 
-  Future<QuerySnapshot> Search(String username) async {
+  // Searches for users by the first letter of the username (case-insensitive).
+  Future<QuerySnapshot> searchUserByUsername(String username) async {
+    String searchKey = username.substring(0, 1).toUpperCase();
     return await FirebaseFirestore.instance
         .collection('users')
-        .where('SearchKey', isEqualTo: username.substring(0, 1).toUpperCase())
+        .where('SearchKey', isEqualTo: searchKey)
         .get();
   }
 }

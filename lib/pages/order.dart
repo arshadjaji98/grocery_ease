@@ -179,14 +179,18 @@ class _OrderState extends State<Order> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => GooglePay()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                GooglePay(total: total.toString())));
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     width: MediaQuery.of(context).size.width * 0.8,
                     decoration: BoxDecoration(
-                      color: const Color(0XFF8a4af3),
+                      color: Colors.white,
+                      border: Border.all(color: Color(0XFF8a4af3)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     margin: const EdgeInsets.symmetric(
@@ -196,9 +200,9 @@ class _OrderState extends State<Order> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            "Pay with Google Pay",
+                            "Pay with",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0XFF8a4af3),
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
                             ),
@@ -222,7 +226,8 @@ class _OrderState extends State<Order> {
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     width: MediaQuery.of(context).size.width * 0.8,
                     decoration: BoxDecoration(
-                      color: const Color(0XFF8a4af3),
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0XFF8a4af3)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     margin: const EdgeInsets.symmetric(
@@ -234,7 +239,7 @@ class _OrderState extends State<Order> {
                           const Text(
                             "Cash on delivery",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0XFF8a4af3),
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
                             ),
@@ -285,7 +290,7 @@ class _OrderState extends State<Order> {
             const Spacer(),
             const Divider(),
             Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -295,7 +300,7 @@ class _OrderState extends State<Order> {
                   ),
                   Text(
                     "\$" + total.toString(),
-                    style: AppWidgets.semiBoldTextFieldStyle(),
+                    style: AppWidgets.boldTextFieldStyle(),
                   ),
                 ],
               ),

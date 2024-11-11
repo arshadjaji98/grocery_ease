@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/admin/add_food.dart';
+import 'package:groceryease_delivery_application/services/database_services.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class HomeAdmin extends StatefulWidget {
@@ -10,12 +11,22 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
+  String? selectedCategory;
+  final List<String> categories = [
+    'Fruit',
+    'Meat',
+    'Beverages',
+    'Bakery',
+    'Oil'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: Text(
@@ -23,39 +34,78 @@ class _HomeAdminState extends State<HomeAdmin> {
                 style: AppWidgets.headerTextFieldStyle(),
               ),
             ),
-            SizedBox(
-              height: 50.0,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddFood()));
+            SizedBox(height: 20.0),
+            DropdownButton<String>(
+              hint: Text("Select Category"),
+              value: selectedCategory,
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value;
+                });
               },
-              child: Material(
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(10),
-                child: Center(
-                  child: Container(
-                    height: 100,
-                    width: 400,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(10),
+              items: categories
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddFood()),
+                );
+              },
+              child: Text("Add Food Item"),
+            ),
+            SizedBox(height: 20.0),
+            Expanded(
+              child: selectedCategory == null
+                  ? Center(child: Text("Please select a category"))
+                  : StreamBuilder<List<Map<String, dynamic>>>(
+                      stream: DatabaseServices()
+                          .getFoodItem(selectedCategory!)
+                          .map((snapshot) {
+                        return snapshot.docs
+                            .map((doc) => doc.data() as Map<String, dynamic>)
+                            .toList();
+                      }),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text("No items found"));
+                        }
+
+                        List<Map<String, dynamic>> foodItems = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: foodItems.length,
+                          itemBuilder: (context, index) {
+                            final foodItem = foodItems[index];
+                            return ListTile(
+                              leading: foodItem['Image'] != null
+                                  ? ClipRRect(
+                                      child: Image.network(
+                                        foodItem['Image'],
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Icon(Icons.fastfood),
+                              title: Text(foodItem['Name'] ?? 'No Name'),
+                              subtitle:
+                                  Text(foodItem['Detail'] ?? 'No Description'),
+                            );
+                          },
+                        );
+                      },
                     ),
-                    child: const Center(
-                      child: Text(
-                        "Add Food Items",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
+            ),
           ],
         ),
       ),

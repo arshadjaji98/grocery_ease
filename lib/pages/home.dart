@@ -41,11 +41,7 @@ class _HomeState extends State<Home> {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-            child: SpinKitWave(
-              color: Color(0XFF8a4af3),
-              size: 50.0,
-            ),
-          );
+              child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
         }
         if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
           return const Center(child: Text("No items available"));
@@ -126,11 +122,7 @@ class _HomeState extends State<Home> {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: SpinKitWave(
-              color: Color(0XFF8a4af3),
-              size: 80.0,
-            ),
-          );
+              child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
         }
         if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
           return const Center(child: Text("No items available"));
@@ -227,11 +219,11 @@ class _HomeState extends State<Home> {
     var capitalizedValue =
         value.substring(0, 1).toUpperCase() + value.substring(1);
     if (queryResultSet.isEmpty && value.length == 1) {
-      DatabaseServices().Search(value).then((QuerySnapshot docs) {
-        for (int i = 0; i < docs.docs.length; ++i) {
-          queryResultSet.add(docs.docs[i].data());
-        }
-      });
+      // DatabaseServices().Search(value).then((QuerySnapshot docs) {
+      //   for (int i = 0; i < docs.docs.length; ++i) {
+      //     queryResultSet.add(docs.docs[i].data());
+      //   }
+      // });
     } else {
       temSearchStore = [];
       queryResultSet.forEach((element) {
@@ -269,7 +261,6 @@ class _HomeState extends State<Home> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Spacer(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

@@ -242,7 +242,7 @@ class _DetailsState extends State<Details> {
                         "Image": widget.image,
                       };
                       await DatabaseServices()
-                          .addFoodtoCart(addFoodToCart, id!);
+                          .addFoodToCart(addFoodToCart, id!);
                       Utils.toastMessage("Food added to Cart Successfully");
                       // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       //   backgroundColor: Colors.orange,
