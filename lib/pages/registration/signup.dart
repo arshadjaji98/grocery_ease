@@ -104,36 +104,44 @@ class _SignUpState extends State<SignUp> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40))),
-              child: const Text(""),
             ),
-            SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  children: [
-                    Center(
-                        child: Image.asset("assets/images/text logo.png",
-                            width: MediaQuery.of(context).size.width,
-                            height: 200)),
-                    const SizedBox(height: 30.0),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: WebResponsive(
-                        child: Material(
-                          elevation: 5.0,
-                          borderRadius: BorderRadius.circular(20),
-                          child: SingleChildScrollView(
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                  left: 20.0, right: 20.0),
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height / 1,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Form(
-                                key: _formkey,
-                                child: SingleChildScrollView(
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 50),
+                  // Center(
+                  //     child: Image.asset("assets/images/text logo.png",
+                  //         width: MediaQuery.of(context).size.width,
+                  //         height: 200)),
+                  // const SizedBox(height: 30.0),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: WebResponsive(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Material(
+                              elevation: 5.0,
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.only(
+                                    left: 20.0, right: 20.0),
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height / 1.5,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: Form(
+                                  key: _formkey,
                                   child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       const SizedBox(height: 30.0),
                                       Text(
@@ -207,7 +215,7 @@ class _SignUpState extends State<SignUp> {
                                             prefixIcon: const Icon(
                                                 Icons.password_outlined)),
                                       ),
-                                      const SizedBox(height: 60.0),
+                                      const SizedBox(height: 20.0),
                                       GestureDetector(
                                         onTap: () async {
                                           if (_formkey.currentState!
@@ -254,7 +262,7 @@ class _SignUpState extends State<SignUp> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(height: 40.0),
+                                      const SizedBox(height: 10.0),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -286,52 +294,43 @@ class _SignUpState extends State<SignUp> {
                                                           FontWeight.bold))),
                                         ],
                                       ),
-                                      Text(
-                                        "OR",
-                                        style: AppWidgets.boldTextFieldStyle(),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Text(
-                                            "Register as an Admin ",
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: 14,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const AdminLogin()));
-                                              },
-                                              child: const Text("Admin Login",
-                                                  style: TextStyle(
-                                                      fontFamily: 'Poppins',
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
-                                        ],
-                                      ),
                                     ],
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Register as an Admin ",
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AdminLogin()));
+                          },
+                          child: const Text("Admin Login",
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold))),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

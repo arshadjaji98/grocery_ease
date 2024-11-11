@@ -1,20 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:groceryease_delivery_application/admin/admin_register.dart';
+import 'package:groceryease_delivery_application/admin/admin_login.dart';
 import 'package:groceryease_delivery_application/admin/home_admin.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
 
-class AdminLogin extends StatefulWidget {
-  const AdminLogin({super.key});
+class AdminRegister extends StatefulWidget {
+  const AdminRegister({super.key});
 
   @override
-  State<AdminLogin> createState() => _AdminLoginState();
+  State<AdminRegister> createState() => _AdminRegisterState();
 }
 
-class _AdminLoginState extends State<AdminLogin> {
+class _AdminRegisterState extends State<AdminRegister> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
   bool isRegistering = false;
 
@@ -53,7 +54,7 @@ class _AdminLoginState extends State<AdminLogin> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Welcome Back!",
+                        "Let's start with\nAdmin!",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 25.0,
@@ -75,13 +76,15 @@ class _AdminLoginState extends State<AdminLogin> {
                               const SizedBox(height: 30.0),
                               _buildTextField("Email", emailController),
                               const SizedBox(height: 20.0),
+                              _buildTextField("Shop Name", usernameController),
+                              const SizedBox(height: 20.0),
                               _buildTextField(
                                   "Password", userPasswordController,
                                   isPassword: true),
                               const SizedBox(height: 40.0),
                               GestureDetector(
                                 onTap: () {
-                                  loginAdmin();
+                                  registerAdmin();
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -93,9 +96,9 @@ class _AdminLoginState extends State<AdminLogin> {
                                     color: Colors.black,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Center(
+                                  child: const Center(
                                     child: Text(
-                                      "Login",
+                                      "Register",
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20.0,
@@ -110,10 +113,9 @@ class _AdminLoginState extends State<AdminLogin> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              AdminRegister()));
+                                          builder: (context) => AdminLogin()));
                                 },
-                                child: Text("Create new account"),
+                                child: Text("Already have an account? Login"),
                               ),
                             ],
                           ),
@@ -157,28 +159,26 @@ class _AdminLoginState extends State<AdminLogin> {
     );
   }
 
-  void loginAdmin() async {
+  void registerAdmin() async {
     final email = emailController.text.trim();
+    final username = usernameController.text.trim();
     final password = userPasswordController.text.trim();
 
-    final snapshot = await FirebaseFirestore.instance.collection("Admin").get();
-    bool isAuthenticated = false;
+    await FirebaseFirestore.instance.collection("Admin").add({
+      'email': email,
+      'id': username,
+      'password': password,
+    }).then((_) {
+      Utils.toastMessage("Admin Registered successfully!");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text("Admin registered successfully!")));
 
-    for (var result in snapshot.docs) {
-      if (result.data()['email'] == email &&
-          result.data()['password'] == password) {
-        isAuthenticated = true;
-        Route route = MaterialPageRoute(builder: (context) => HomeAdmin());
-        Navigator.pushReplacement(context, route);
-        break;
-      }
-    }
-
-    if (!isAuthenticated) {
-      Utils.toastMessage('Invalid');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     backgroundColor: Colors.orangeAccent,
-      //     content: Text("Invalid credentials!")));
-    }
+      Route route = MaterialPageRoute(builder: (context) => HomeAdmin());
+      Navigator.pushReplacement(context, route);
+    }).catchError((error) {
+      Utils.toastMessage("Registration failed!");
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(const SnackBar(content: Text("Registration failed!")));
+    });
   }
 }

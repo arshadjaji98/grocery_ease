@@ -79,17 +79,19 @@ class _LogInState extends State<LogIn> {
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40))),
           ),
-          SingleChildScrollView(
+          Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: Image.asset(
-                    "assets/images/text logo.png",
-                    width: MediaQuery.of(context).size.width,
-                    height: 250,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                // Center(
+                //   child: Image.asset(
+                //     "assets/images/text logo.png",
+                //     width: MediaQuery.of(context).size.width,
+                //     height: 250,
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: WebResponsive(
@@ -107,6 +109,7 @@ class _LogInState extends State<LogIn> {
                         child: Form(
                           key: _formkey,
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const SizedBox(height: 20.0),
                               Text("Login",

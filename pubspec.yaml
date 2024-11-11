@@ -50,6 +50,7 @@ dependencies:
   fluttertoast: ^8.2.8
   liquid_pull_to_refresh: ^3.0.1
   pay: ^2.0.0
+  get: ^4.6.6
   
 
 dev_dependencies:

@@ -135,18 +135,25 @@ class _DetailsState extends State<Details> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.name,
                           style: AppWidgets.headerTextFieldStyle()),
-                      // SizedBox(height: 50),
-                      // Text("\$${total.toString()}",
-                      //     style: TextStyle(
-                      //         color: const Color(0XFF8a4af3),
-                      //         fontFamily: 'Poppins',
-                      //         fontSize: 23)),
+                      Row(children: [
+                        Text("Chat with Admin",
+                            style: AppWidgets.lightTextFieldStyle()),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.chat_outlined,
+                              color: Color(0XFF8a4af3),
+                            )),
+                      ])
                     ],
                   ),
                   const Spacer(),

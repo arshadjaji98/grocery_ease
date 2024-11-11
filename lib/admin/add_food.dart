@@ -82,7 +82,7 @@ class _AddFoodState extends State<AddFood> {
               Navigator.pop(context);
             },
             child: const Icon(
-              Icons.arrow_back_ios_new_outlined,
+              Icons.arrow_back,
               color: Color(0xFF373866),
             )),
         centerTitle: true,
