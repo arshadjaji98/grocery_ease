@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseServices {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // Adds user details to the 'users' collection with a specified document ID.
   Future<void> addUserDetail(
       Map<String, dynamic> userInfoMap, String userId) async {
@@ -37,5 +40,10 @@ class DatabaseServices {
         .collection('users')
         .where('SearchKey', isEqualTo: searchKey)
         .get();
+  }
+
+  // Signs out the current user.
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }

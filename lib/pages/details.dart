@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groceryease_delivery_application/pages/favorite.dart';
 import 'package:groceryease_delivery_application/services/database_services.dart';
 import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
@@ -25,6 +25,41 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   int a = 1, total = 0;
   String? id;
+  bool isFavorite = false;
+  Future<void> toggleFavorite() async {
+    // Get the user ID
+    String? userId = await SharedPerfHelper().getUserId();
+
+    // Check if the item is already in the favorites list
+    final favoritesRef =
+        FirebaseFirestore.instance.collection('favorites').doc(userId);
+    final docSnapshot = await favoritesRef.get();
+
+    if (docSnapshot.exists) {
+      // If favorites already exist, check if the item is already saved
+      var favoritesData = docSnapshot.data()?['items'] ?? [];
+      if (favoritesData.contains(widget.name)) {
+        // Item is already in favorites, remove it
+        favoritesData.remove(widget.name);
+      } else {
+        // Item is not in favorites, add it
+        favoritesData.add(widget.name);
+      }
+
+      // Update the favorites list
+      await favoritesRef.update({
+        'items': favoritesData,
+      });
+    } else {
+      // If no favorites list exists, create a new one with the item
+      await favoritesRef.set({
+        'items': [widget.name],
+      });
+    }
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
 
   Future<void> getSharedPref() async {
     id = await SharedPerfHelper().getUserId();
@@ -117,11 +152,14 @@ class _DetailsState extends State<Details> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.favorite,
-                                color: Colors.white,
-                              ),
+                              onPressed: () {
+                                toggleFavorite();
+                              },
+                              icon: Icon(
+                                  isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: Colors.white),
                             ),
                           ),
                         ],

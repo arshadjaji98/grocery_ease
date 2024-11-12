@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/pages/home.dart';
 import 'package:groceryease_delivery_application/pages/order.dart';
 import 'package:groceryease_delivery_application/pages/profile.dart';
-import 'package:groceryease_delivery_application/pages/wallet.dart';
+import 'package:groceryease_delivery_application/pages/favorite.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -23,7 +23,7 @@ class _BottomNavState extends State<BottomNav> {
       case 1:
         return Order();
       case 2:
-        return Wallet();
+        return Favorite();
       case 3:
         return Profile();
       default:
@@ -47,7 +47,7 @@ class _BottomNavState extends State<BottomNav> {
         items: [
           Icon(Icons.home_outlined, color: Colors.white),
           Icon(Icons.shopping_bag_outlined, color: Colors.white),
-          Icon(Icons.wallet_outlined, color: Colors.white),
+          Icon(Icons.favorite, color: Colors.white),
           Icon(Icons.person_outlined, color: Colors.white)
         ],
       ),

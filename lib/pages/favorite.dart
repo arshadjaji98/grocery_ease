@@ -1,46 +1,73 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
-class FavoriteItems extends StatefulWidget {
-  const FavoriteItems({super.key});
+class Favorite extends StatefulWidget {
+  const Favorite({super.key});
 
   @override
-  State<FavoriteItems> createState() => _FavoriteItemsState();
+  State<Favorite> createState() => _FavoriteState();
 }
 
-class _FavoriteItemsState extends State<FavoriteItems> {
+class _FavoriteState extends State<Favorite> {
+  List<String> favoriteItems = [];
+
+  Future<void> getFavorites() async {
+    String? userId = await SharedPerfHelper().getUserId();
+    final favoritesRef =
+        FirebaseFirestore.instance.collection('favorites').doc(userId);
+    final docSnapshot = await favoritesRef.get();
+
+    if (docSnapshot.exists) {
+      setState(() {
+        favoriteItems = List<String>.from(docSnapshot.data()?['items'] ?? []);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getFavorites(); // Load the favorite items when the screen is initialized
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.only(top: 60.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Material(
-              elevation: 2.0,
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.arrow_back)),
-                      const SizedBox(width: 100),
-                      Text(
-                        "Favorite",
-                        style: AppWidgets.headerTextFieldStyle(),
-                      ),
-                    ],
+        margin: EdgeInsets.only(top: 60),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Material(
+                elevation: 2,
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: Center(
+                    child: Text(
+                      "Favorites",
+                      style: AppWidgets.headerTextFieldStyle(),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              // Display the favorite items
+              if (favoriteItems.isEmpty)
+                Center(child: Text("No favorites added yet."))
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: favoriteItems.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(favoriteItems[index]),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );

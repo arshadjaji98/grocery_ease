@@ -39,7 +39,6 @@ class SharedPerfHelper {
     return prefs.setString(userProfileKey, getUserProfile);
   }
 
-  // New method to save user address
   Future<bool> saveUserAddress(String getUserAddress) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(userAddressKey, getUserAddress);
@@ -75,7 +74,6 @@ class SharedPerfHelper {
     return pref.getString(userProfileKey);
   }
 
-  // New method to retrieve user address
   Future<String?> getUserAddress() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString(userAddressKey);

@@ -281,7 +281,7 @@ class _HomeState extends State<Home> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const FavoriteItems()));
+                                              const Favorite()));
                                 },
                                 icon: const Icon(
                                   Icons.favorite,
