@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/admin/admin_login.dart';
+import 'package:groceryease_delivery_application/admin/home_admin.dart';
 import 'package:groceryease_delivery_application/firebase_options.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
-import 'package:groceryease_delivery_application/pages/registration/login.dart';
-import 'package:groceryease_delivery_application/pages/registration/signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
