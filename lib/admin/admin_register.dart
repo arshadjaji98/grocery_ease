@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/admin/admin_login.dart';
 import 'package:groceryease_delivery_application/admin/home_admin.dart';
@@ -159,26 +160,31 @@ class _AdminRegisterState extends State<AdminRegister> {
     );
   }
 
-  void registerAdmin() async {
+  Future<void> registerAdmin() async {
     final email = emailController.text.trim();
     final username = usernameController.text.trim();
     final password = userPasswordController.text.trim();
 
-    await FirebaseFirestore.instance.collection("Admin").add({
-      'email': email,
-      'id': username,
-      'password': password,
-    }).then((_) {
-      Utils.toastMessage("Admin Registered successfully!");
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text("Admin registered successfully!")));
+    try {
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      Route route = MaterialPageRoute(builder: (context) => HomeAdmin());
-      Navigator.pushReplacement(context, route);
-    }).catchError((error) {
-      Utils.toastMessage("Registration failed!");
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(const SnackBar(content: Text("Registration failed!")));
-    });
+      await FirebaseFirestore.instance
+          .collection("Admin")
+          .doc(userCredential.user?.uid)
+          .set({
+        'email': email,
+        'id': username,
+      });
+
+      Utils.toastMessage("Admin Registered successfully!");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeAdmin()),
+      );
+    } catch (error) {
+      Utils.toastMessage("Registration failed: $error");
+    }
   }
 }

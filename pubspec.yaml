@@ -52,8 +52,13 @@ dependencies:
   pay: ^2.0.0
   get: ^4.6.6
   provider: ^6.1.2
+  flutter_launcher_icons: ^0.14.1
   
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/ic_launcher.png"
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

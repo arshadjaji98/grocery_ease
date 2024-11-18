@@ -175,10 +175,7 @@ class _AdminLoginState extends State<AdminLogin> {
     }
 
     if (!isAuthenticated) {
-      Utils.toastMessage('Invalid');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     backgroundColor: Colors.orangeAccent,
-      //     content: Text("Invalid credentials!")));
+      Utils.toastMessage('Wrong Credentials');
     }
   }
 }

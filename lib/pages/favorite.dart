@@ -41,31 +41,30 @@ class _FavoriteState extends State<Favorite> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Material(
-              //   elevation: 2,
-              //   child: Container(
-              //     padding: EdgeInsets.only(bottom: 10),
-              //     child: Center(
-              //       child: Text(
-              //         "Favorites",
-              //         style: AppWidgets.headerTextFieldStyle(),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // // Display the favorite items
-              // if (favoriteItems.isEmpty)
-              //   Center(child: Text("No favorites added yet."))
-              // else
-              //   ListView.builder(
-              //     shrinkWrap: true,
-              //     itemCount: favoriteItems.length,
-              //     itemBuilder: (context, index) {
-              //       return ListTile(
-              //         title: Text(favoriteItems[index]),
-              //       );
-              //     },
-              //   ),
+              Material(
+                elevation: 2,
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: Center(
+                    child: Text(
+                      "Favorites",
+                      style: AppWidgets.headerTextFieldStyle(),
+                    ),
+                  ),
+                ),
+              ),
+              if (favoriteItems.isEmpty)
+                Center(child: Text("No favorites added yet."))
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: favoriteItems.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(favoriteItems[index]),
+                    );
+                  },
+                ),
             ],
           ),
         ),
