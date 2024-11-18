@@ -8,15 +8,15 @@ import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
-  final String image, name, details, price;
+  final String image, name, details, price, id;
 
-  Details({
-    super.key,
-    required this.image,
-    required this.name,
-    required this.details,
-    required this.price,
-  });
+  const Details(
+      {super.key,
+      required this.image,
+      required this.name,
+      required this.details,
+      required this.price,
+      required this.id});
 
   @override
   State<Details> createState() => _DetailsState();
@@ -26,32 +26,35 @@ class _DetailsState extends State<Details> {
   int a = 1, total = 0;
   String? id;
   bool isFavorite = false;
+  Future<List<Map<String, dynamic>>> fetchCategoryItems(
+      String categoryName) async {
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection("Fruits").get();
+
+    return querySnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+  }
+
   Future<void> toggleFavorite() async {
-    // Get the user ID
     String? userId = await SharedPerfHelper().getUserId();
 
-    // Check if the item is already in the favorites list
     final favoritesRef =
         FirebaseFirestore.instance.collection('favorites').doc(userId);
     final docSnapshot = await favoritesRef.get();
 
     if (docSnapshot.exists) {
-      // If favorites already exist, check if the item is already saved
       var favoritesData = docSnapshot.data()?['items'] ?? [];
       if (favoritesData.contains(widget.name)) {
-        // Item is already in favorites, remove it
         favoritesData.remove(widget.name);
       } else {
-        // Item is not in favorites, add it
         favoritesData.add(widget.name);
       }
 
-      // Update the favorites list
       await favoritesRef.update({
         'items': favoritesData,
       });
     } else {
-      // If no favorites list exists, create a new one with the item
       await favoritesRef.set({
         'items': [widget.name],
       });
@@ -78,253 +81,368 @@ class _DetailsState extends State<Details> {
     total = int.parse(widget.price);
   }
 
+  String buttonText = "Add to Cart";
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: EdgeInsets.only(top: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                CachedNetworkImage(
-                  imageUrl: widget.image,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 2.5,
-                  fit: BoxFit.fill,
-                  placeholder: (context, url) => const Center(
-                    child: SpinKitWave(
-                      color: Color(0XFF8a4af3),
-                      size: 50.0,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Center(
-                    child: Icon(Icons.error),
-                  ),
-                ),
-                Stack(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: widget.image,
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height / 2.5,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) => const Center(
-                        child: SpinKitWave(
-                          color: Color(0XFF8a4af3),
-                          size: 50.0,
+        body: Container(
+            margin: EdgeInsets.only(top: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: widget.image,
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height / 2.5,
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) => const Center(
+                          child: SpinKitWave(
+                            color: Color(0XFF8a4af3),
+                            size: 50.0,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(Icons.error),
                         ),
                       ),
-                      errorWidget: (context, url, error) => const Center(
-                        child: Icon(Icons.error),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      left: 10,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      Stack(
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
+                          CachedNetworkImage(
+                            imageUrl: widget.image,
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            fit: BoxFit.fill,
+                            placeholder: (context, url) => const Center(
+                              child: SpinKitWave(
+                                color: Color(0XFF8a4af3),
+                                size: 50.0,
                               ),
-                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(Icons.arrow_back, color: Colors.white),
+                            errorWidget: (context, url, error) => const Center(
+                              child: Icon(Icons.error),
                             ),
                           ),
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.65),
-                          Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                toggleFavorite();
-                              },
-                              icon: Icon(
-                                  isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: Colors.white),
+                          Positioned(
+                            top: 20,
+                            left: 10,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    icon: Icon(Icons.arrow_back,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.65),
+                                Container(
+                                  margin: const EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    onPressed: () {
+                                      toggleFavorite();
+                                    },
+                                    icon: Icon(
+                                        isFavorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.name,
-                          style: AppWidgets.headerTextFieldStyle()),
-                      Row(children: [
-                        Text("Chat with Admin",
-                            style: AppWidgets.lightTextFieldStyle()),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.chat_outlined,
-                              color: Color(0XFF8a4af3),
-                            )),
-                      ])
                     ],
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      if (a > 1) {
-                        a--;
-                        total = total - int.parse(widget.price);
-                      }
-                      setState(() {});
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: const Color(0XFF8a4af3),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: const Icon(Icons.remove, color: Colors.white),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(widget.name,
+                                style: AppWidgets.headerTextFieldStyle()),
+                          ],
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            if (a > 1) {
+                              a--;
+                              total = total - int.parse(widget.price);
+                            }
+                            setState(() {});
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0XFF8a4af3),
+                                borderRadius: BorderRadius.circular(5)),
+                            child:
+                                const Icon(Icons.remove, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Text(a.toString(),
+                            style: AppWidgets.boldTextFieldStyle()),
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () {
+                            a++;
+                            total = total + int.parse(widget.price);
+                            setState(() {});
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0XFF8a4af3),
+                                borderRadius: BorderRadius.circular(5)),
+                            child: const Icon(Icons.add, color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 20),
-                  Text(a.toString(), style: AppWidgets.boldTextFieldStyle()),
-                  const SizedBox(width: 20),
-                  GestureDetector(
-                    onTap: () {
-                      a++;
-                      total = total + int.parse(widget.price);
-                      setState(() {});
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: const Color(0XFF8a4af3),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: const Icon(Icons.add, color: Colors.white),
+                  const SizedBox(height: 50),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Text("Delivery Time",
+                            style: AppWidgets.semiBoldTextFieldStyle()),
+                        const SizedBox(width: 25),
+                        Text("30 min",
+                            style: AppWidgets.semiBoldTextFieldStyle()),
+                        const SizedBox(width: 5),
+                        const Icon(Icons.alarm, color: Colors.black54),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Text("Delivery Time",
-                      style: AppWidgets.semiBoldTextFieldStyle()),
-                  const SizedBox(width: 25),
-                  Text("30 min", style: AppWidgets.semiBoldTextFieldStyle()),
-                  const SizedBox(width: 5),
-                  const Icon(Icons.alarm, color: Colors.black54),
-                ],
-              ),
-            ),
-            const SizedBox(height: 100),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "About",
-                    style: AppWidgets.boldTextFieldStyle(),
+                  const SizedBox(height: 100),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "About",
+                          style: AppWidgets.boldTextFieldStyle(),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          widget.details,
+                          maxLines: 4,
+                          style: AppWidgets.lightTextFieldStyle(),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    widget.details,
-                    maxLines: 4,
-                    style: AppWidgets.lightTextFieldStyle(),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Similar Products",
+                            style: AppWidgets.boldTextFieldStyle(),
+                          ),
+                          const SizedBox(height: 10),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("Fruit")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: SpinKitWave(
+                                      color: Color(0XFF8a4af3), size: 30.0),
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text(
+                                    "Something went wrong!",
+                                    style: AppWidgets.lightTextFieldStyle(),
+                                  ),
+                                );
+                              }
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    "No similar products found.",
+                                    style: AppWidgets.lightTextFieldStyle(),
+                                  ),
+                                );
+                              }
+
+                              final products = snapshot.data!.docs;
+
+                              return SizedBox(
+                                height: 200, // Adjust as needed
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index].data()
+                                        as Map<String, dynamic>;
+                                    return GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        margin:
+                                            const EdgeInsets.only(right: 10),
+                                        width: 150, // Adjust width as needed
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            CachedNetworkImage(
+                                              imageUrl: product['Image'],
+                                              height: 100,
+                                              width: 150,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  const Center(
+                                                child: SpinKitWave(
+                                                  color: Color(0XFF8a4af3),
+                                                  size: 20.0,
+                                                ),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                product['Name'],
+                                                style: AppWidgets
+                                                    .semiBoldTextFieldStyle(),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                "\$${product['Price']}",
+                                                style: AppWidgets
+                                                    .lightTextFieldStyle(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Total Price",
-                          style: AppWidgets.semiBoldTextFieldStyle()),
-                      Text("\$${total.toString()}",
-                          style: AppWidgets.boldTextFieldStyle()),
-                    ],
-                  ),
-                  const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () async {
-                      Map<String, dynamic> addFoodToCart = {
-                        "Name": widget.name,
-                        "Quantity": a.toString(),
-                        "Total": total.toString(),
-                        "Image": widget.image,
-                      };
-                      await DatabaseServices()
-                          .addFoodToCart(addFoodToCart, id!);
-                      Utils.toastMessage("Food added to Cart Successfully");
-                      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      //   backgroundColor: Colors.orange,
-                      //   content: Text(
-                      //     "Food added to Cart Successfully",
-                      //     style: TextStyle(fontSize: 20.0, color: Colors.white),
-                      //   ),
-                      // ));
+                      if (!isLoading) {
+                        setState(() {
+                          isLoading = true; // Start loading
+                        });
+
+                        Map<String, dynamic> addFoodToCart = {
+                          "Name": widget.name,
+                          "Quantity": a.toString(),
+                          "Total": total.toString(),
+                          "Image": widget.image,
+                        };
+
+                        try {
+                          await DatabaseServices()
+                              .addFoodToCart(addFoodToCart, id!);
+                          Utils.toastMessage("Food added to Cart Successfully");
+
+                          setState(() {
+                            buttonText = "Added to Cart"; // Update button text
+                            isLoading = false; // Stop loading
+                          });
+                        } catch (error) {
+                          Utils.toastMessage("Failed to add food to cart");
+
+                          setState(() {
+                            isLoading = false; // Stop loading even on error
+                          });
+                        }
+                      }
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width / 2,
                       padding: const EdgeInsets.only(
-                          top: 10, bottom: 10, right: 5, left: 5),
+                        top: 10,
+                        bottom: 10,
+                        right: 5,
+                        left: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0XFF8a4af3),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            "Add to Cart",
-                            style: TextStyle(
+                          if (isLoading)
+                            SpinKitWave(color: Colors.white, size: 15)
+                          else
+                            Text(
+                              buttonText,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Poppins',
-                                fontSize: 20),
-                          ),
+                                fontSize: 20,
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            )));
   }
 }

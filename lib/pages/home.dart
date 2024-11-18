@@ -81,6 +81,7 @@ class _HomeState extends State<Home> {
                             name: ds['Name'],
                             details: ds['Detail'],
                             price: ds['Price'],
+                            id: '',
                           )),
                 );
               },
@@ -162,6 +163,7 @@ class _HomeState extends State<Home> {
                       name: ds['Name'],
                       details: ds['Detail'],
                       price: ds['Price'],
+                      id: '',
                     ),
                   ),
                 );
