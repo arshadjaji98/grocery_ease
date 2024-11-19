@@ -319,17 +319,19 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                               color: fruit
                                   ? Colors.white
-                                  : const Color(0xff53B175).withOpacity(0.5),
+                                  : const Color.fromARGB(255, 114, 236, 159)
+                                      .withOpacity(0.4),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(color: const Color(0xff53B175))),
-                          child: Column(
+                          child: Row(
                             children: [
                               Image.asset('assets/images/fruits.png',
-                                  height: 100, width: 100),
-                              const Text("Fruits & \nVegetables",
+                                  height: 20, width: 20),
+                              SizedBox(width: 5),
+                              const Text("Fruits",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(fontFamily: 'Poppins'))
+                                  style: TextStyle(fontFamily: 'Poppins')),
                             ],
                           ),
                         ),
@@ -351,16 +353,18 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                               color: backery
                                   ? Colors.white
-                                  : const Color(0xffD3B0E0).withOpacity(0.5),
+                                  : const Color(0xffD3B0E0).withOpacity(0.4),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(color: const Color(0xffD3B0E0))),
-                          child: Column(
+                          child: Row(
                             children: [
                               Image.asset('assets/images/backery.png',
-                                  height: 100, width: 100),
-                              const Text("Bakery\nSnacks",
-                                  style: TextStyle(fontFamily: 'Poppins'))
+                                  height: 20, width: 20),
+                              SizedBox(width: 5),
+                              const Text("Bakery",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontFamily: 'Poppins')),
                             ],
                           ),
                         ),
@@ -382,16 +386,18 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                               color: beverages
                                   ? Colors.white
-                                  : const Color(0xffB7DFF5).withOpacity(0.5),
+                                  : const Color(0xffB7DFF5).withOpacity(0.4),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(color: const Color(0xffB7DFF5))),
-                          child: Column(
+                          child: Row(
                             children: [
                               Image.asset('assets/images/beverages.png',
-                                  height: 100, width: 100),
-                              const Text("Beverages\n",
-                                  style: TextStyle(fontFamily: 'Poppins'))
+                                  height: 20, width: 20),
+                              SizedBox(width: 5),
+                              const Text("Beverages",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontFamily: 'Poppins')),
                             ],
                           ),
                         ),
@@ -413,16 +419,18 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                               color: meat
                                   ? Colors.white
-                                  : const Color(0xffF7A593).withOpacity(0.5),
+                                  : const Color(0xffF7A593).withOpacity(0.4),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(color: const Color(0xffF7A593))),
-                          child: Column(
+                          child: Row(
                             children: [
                               Image.asset('assets/images/meat.png',
-                                  height: 100, width: 100),
-                              const Text("Meat & Fish\n",
-                                  style: TextStyle(fontFamily: 'Poppins'))
+                                  height: 20, width: 20),
+                              SizedBox(width: 5),
+                              const Text("Meat",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontFamily: 'Poppins')),
                             ],
                           ),
                         ),
@@ -439,22 +447,27 @@ class _HomeState extends State<Home> {
                           oil = true;
                           setState(() {});
                         },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: oil
-                                  ? Colors.white
-                                  : const Color(0xffF8A44C).withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(color: const Color(0xffF8A44C))),
-                          child: Column(
-                            children: [
-                              Image.asset('assets/images/oil.png',
-                                  height: 100, width: 100),
-                              const Text("Cooking Oil\n",
-                                  style: TextStyle(fontFamily: 'Poppins'))
-                            ],
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: oil
+                                    ? Colors.white
+                                    : const Color(0xffF8A44C).withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(8),
+                                border:
+                                    Border.all(color: const Color(0xffF8A44C))),
+                            child: Row(
+                              children: [
+                                Image.asset('assets/images/oil.png',
+                                    height: 20, width: 20),
+                                SizedBox(width: 5),
+                                const Text("Oil",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontFamily: 'Poppins')),
+                              ],
+                            ),
                           ),
                         ),
                       ),
