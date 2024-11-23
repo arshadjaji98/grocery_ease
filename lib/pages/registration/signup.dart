@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groceryease_delivery_application/admin/admin_login.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
@@ -332,33 +331,6 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Register as an Admin ",
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 14,
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const AdminLogin()));
-                            },
-                            child: const Text("Admin Login",
-                                style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    decoration: TextDecoration.underline,
-                                    fontWeight: FontWeight.bold))),
-                      ],
                     ),
                   ],
                 ),
