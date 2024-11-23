@@ -332,6 +332,9 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
+                    Row(
+                      children: [Text("Sign in with google")],
+                    )
                   ],
                 ),
               ),

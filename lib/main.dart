@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/firebase_options.dart';
 import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
+import 'package:groceryease_delivery_application/pages/registration/signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,6 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const BottomNav());
+        home: const SignUp());
   }
 }
