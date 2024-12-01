@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
+import 'package:groceryease_delivery_application/pages/user/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/onboard.dart';
 
 class AuthGate extends StatelessWidget {

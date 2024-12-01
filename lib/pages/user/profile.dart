@@ -10,15 +10,18 @@ import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 
+import '../admin/my_product.dart';
+
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  const Profile({this.userRole,this.userId,super.key});
+  final String? userId;
+  final String? userRole;
 
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  String? profile, name, email;
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
   final TextEditingController addressController = TextEditingController();
@@ -36,72 +39,50 @@ class _ProfileState extends State<Profile> {
   uploadItem() async {
     if (selectedImage != null) {
       String addId = randomAlphaNumeric(10);
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child("blogImages").child(addId);
+      Reference firebaseStorageRef = FirebaseStorage.instance.ref().child("blogImages").child(addId);
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
       var downloadUrl = await (await task).ref.getDownloadURL();
 
-      // Clear previous profile image if any and save new one
-      await SharedPerfHelper().saveUserProfile(
-          downloadUrl); // Save the new image URL in shared preferences
+      FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+        "profile_image" : downloadUrl,
+      });
 
-      // Update the profile variable to reflect the new image
-      profile = downloadUrl;
       setState(() {});
     }
   }
 
-  getthesharedpref() async {
-    // Clear previous profile before loading new one
-    profile = null;
-
-    // Fetch new user details
-    profile = await SharedPerfHelper().getUserProfile();
-    name = await SharedPerfHelper().getUserName();
-    email = await SharedPerfHelper().getUserEmail();
-    setState(() {});
-  }
-
-  onthisload() async {
-    await getthesharedpref();
-    setState(() {});
-  }
-
   @override
   void initState() {
-    onthisload();
-    fetchUserAddress();
-    fetchUserPhone();
     super.initState();
   }
-
-  String? userPhone;
-  Future<void> fetchUserPhone() async {
-    String? phone = await SharedPerfHelper().getUserPhone();
-    setState(() {
-      userPhone = phone;
-    });
-  }
-
-  String? userAddress;
-
-  Future<void> fetchUserAddress() async {
-    String? address = await SharedPerfHelper().getUserAddress();
-    setState(() {
-      userAddress = address;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: name == null
-          ? const Center(
-              child: Center(
-                  child: SpinKitWave(color: Color(0XFF8a4af3), size: 30)),
-            )
-          : Container(
+      body: widget.userRole == "admin" ?
+      Column(
+        children: [
+          Card(
+            child: ListTile(
+              title: const Text("Products"),
+              onTap: (){
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => MyProducts(userId: widget.userId,)));
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text("Orders"),
+            ),
+          ),
+        ],
+      ) :
+      StreamBuilder(
+        stream: FirebaseFirestore.instance.collection("users").doc(widget.userId ?? FirebaseAuth.instance.currentUser?.uid).snapshots(),
+        builder: (context,snapshot){
+          if(snapshot.hasData){
+            Map<String,dynamic> data = snapshot.data!.data() as Map<String,dynamic>;
+            return Container(
               margin: const EdgeInsets.only(bottom: 10),
               child: SingleChildScrollView(
                 child: Column(
@@ -129,31 +110,31 @@ class _ProfileState extends State<Profile> {
                               borderRadius: BorderRadius.circular(60),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(60),
-                                child: selectedImage == null
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          getImage();
-                                        },
-                                        child: profile == null
-                                            ? Image.asset(
-                                                "assets/images/boy.png",
-                                                height: 120,
-                                                width: 120,
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Image.network(
-                                                profile!,
-                                                height: 120,
-                                                width: 120,
-                                                fit: BoxFit.cover,
-                                              ),
-                                      )
-                                    : Image.file(
-                                        selectedImage!,
-                                        height: 120,
-                                        width: 120,
-                                        fit: BoxFit.cover,
-                                      ),
+                                child: selectedImage == null ?
+                                GestureDetector(
+                                  onTap: () {
+                                    getImage();
+                                  },
+                                  child: data["profile_image"] == null ?
+                                  Image.asset(
+                                    "assets/images/boy.png",
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ) :
+                                  Image.network(
+                                    data["profile_image"],
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ) :
+                                Image.file(
+                                  selectedImage!,
+                                  height: 120,
+                                  width: 120,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
@@ -165,12 +146,13 @@ class _ProfileState extends State<Profile> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Welcome  " + name!,
+                                "Welcome  " + data["Name"],
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins'),
+                                  color: Colors.white,
+                                  fontSize: 23.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                               Container(
                                 height: 35,
@@ -192,8 +174,7 @@ class _ProfileState extends State<Profile> {
                                           actions: [
                                             TextButton(
                                               onPressed: () {
-                                                Navigator.of(context).pop(
-                                                    false); // Cancel logout
+                                                Navigator.of(context).pop(false); // Cancel logout
                                               },
                                               child: const Text("No"),
                                             ),
@@ -216,7 +197,7 @@ class _ProfileState extends State<Profile> {
                                         MaterialPageRoute(
                                           builder: (context) => const LogIn(),
                                         ),
-                                        (Route<dynamic> route) => false,
+                                            (Route<dynamic> route) => false,
                                       );
                                     }
                                   },
@@ -270,7 +251,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    name!,
+                                    data["Name"],
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -317,7 +298,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    email!,
+                                    data["Email"],
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -366,7 +347,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    userPhone ?? "No Phone Number",
+                                    data["Phone"].toString(),
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -415,7 +396,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    userAddress ?? "No address available",
+                                    data["Address"],
                                     style: const TextStyle(
                                         fontSize: 16, color: Colors.white),
                                   ),
@@ -430,7 +411,12 @@ class _ProfileState extends State<Profile> {
                   ],
                 ),
               ),
-            ),
+            );
+          }else{
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 }

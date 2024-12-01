@@ -1,14 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groceryease_delivery_application/services/database_services.dart';
-import 'package:groceryease_delivery_application/services/shared_perf.dart';
-import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
-  final String image, name, details, price, id;
+  final String image, name, details, price, id,adminId,stock,type;
 
   const Details(
       {super.key,
@@ -16,73 +14,25 @@ class Details extends StatefulWidget {
       required this.name,
       required this.details,
       required this.price,
-      required this.id});
+      required this.stock,
+      required this.id,
+      required this.adminId,
+      required this.type,
+      });
 
   @override
   State<Details> createState() => _DetailsState();
 }
 
 class _DetailsState extends State<Details> {
-  int a = 1, total = 0;
-  String? id;
-  bool isFavorite = false;
-  Future<List<Map<String, dynamic>>> fetchCategoryItems(
-      String categoryName) async {
-    final querySnapshot =
-        await FirebaseFirestore.instance.collection("Fruits").get();
 
-    return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-  }
+  int count = 1;
 
-  Future<void> toggleFavorite() async {
-    String? userId = await SharedPerfHelper().getUserId();
-
-    final favoritesRef =
-        FirebaseFirestore.instance.collection('favorites').doc(userId);
-    final docSnapshot = await favoritesRef.get();
-
-    if (docSnapshot.exists) {
-      var favoritesData = docSnapshot.data()?['items'] ?? [];
-      if (favoritesData.contains(widget.name)) {
-        favoritesData.remove(widget.name);
-      } else {
-        favoritesData.add(widget.name);
-      }
-
-      await favoritesRef.update({
-        'items': favoritesData,
-      });
-    } else {
-      await favoritesRef.set({
-        'items': [widget.name],
-      });
-    }
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
-
-  Future<void> getSharedPref() async {
-    id = await SharedPerfHelper().getUserId();
-    setState(() {});
-  }
-
-  Future<void> onTheLoad() async {
-    await getSharedPref();
-    setState(() {});
-  }
 
   @override
   void initState() {
     super.initState();
-    onTheLoad();
-    total = int.parse(widget.price);
   }
-
-  String buttonText = "Add to Cart";
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -162,12 +112,9 @@ class _DetailsState extends State<Details> {
                                   ),
                                   child: IconButton(
                                     onPressed: () {
-                                      toggleFavorite();
                                     },
                                     icon: Icon(
-                                        isFavorite
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
+                                       Icons.favorite,
                                         color: Colors.white),
                                   ),
                                 ),
@@ -189,41 +136,49 @@ class _DetailsState extends State<Details> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.name,
-                                style: AppWidgets.headerTextFieldStyle()),
+                            Text(
+                              widget.name,
+                              style: AppWidgets.headerTextFieldStyle(),
+                            ),
                           ],
                         ),
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                            if (a > 1) {
-                              a--;
-                              total = total - int.parse(widget.price);
-                            }
-                            setState(() {});
+                            count--;
+                            setState(() {
+
+                            });
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color: const Color(0XFF8a4af3),
-                                borderRadius: BorderRadius.circular(5)),
-                            child:
-                                const Icon(Icons.remove, color: Colors.white),
+                              color: const Color(0XFF8a4af3),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: const Icon(Icons.remove, color: Colors.white),
                           ),
                         ),
                         const SizedBox(width: 20),
-                        Text(a.toString(),
-                            style: AppWidgets.boldTextFieldStyle()),
+                        Text(count.toString(),
+                          style: AppWidgets.boldTextFieldStyle(),
+                        ),
                         const SizedBox(width: 20),
                         GestureDetector(
                           onTap: () {
-                            a++;
-                            total = total + int.parse(widget.price);
-                            setState(() {});
+                            if(int.parse(widget.stock) >= count){
+                              count++;
+                              setState(() {
+
+                              });
+                            }else{
+                              print("Your Stock is $count");
+                            }
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color: const Color(0XFF8a4af3),
-                                borderRadius: BorderRadius.circular(5)),
+                              color: const Color(0XFF8a4af3),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
                             child: const Icon(Icons.add, color: Colors.white),
                           ),
                         ),
@@ -277,15 +232,11 @@ class _DetailsState extends State<Details> {
                           ),
                           const SizedBox(height: 10),
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection("Fruit")
-                                .snapshots(),
+                            stream: FirebaseFirestore.instance.collection("products").where("type",isEqualTo: widget.type).snapshots(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
                                 return Center(
-                                  child: SpinKitWave(
-                                      color: Color(0XFF8a4af3), size: 30.0),
+                                  child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0),
                                 );
                               }
                               if (snapshot.hasError) {
@@ -296,8 +247,7 @@ class _DetailsState extends State<Details> {
                                   ),
                                 );
                               }
-                              if (!snapshot.hasData ||
-                                  snapshot.data!.docs.isEmpty) {
+                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                                 return Center(
                                   child: Text(
                                     "No similar products found.",
@@ -314,8 +264,7 @@ class _DetailsState extends State<Details> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: products.length,
                                   itemBuilder: (context, index) {
-                                    final product = products[index].data()
-                                        as Map<String, dynamic>;
+                                    final product = products[index];
                                     return GestureDetector(
                                       onTap: () {},
                                       child: Container(
@@ -331,7 +280,7 @@ class _DetailsState extends State<Details> {
                                         child: Column(
                                           children: [
                                             CachedNetworkImage(
-                                              imageUrl: product['Image'],
+                                              imageUrl: product['image'],
                                               height: 100,
                                               width: 150,
                                               fit: BoxFit.cover,
@@ -350,9 +299,8 @@ class _DetailsState extends State<Details> {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
-                                                product['Name'],
-                                                style: AppWidgets
-                                                    .semiBoldTextFieldStyle(),
+                                                product['name'],
+                                                style: AppWidgets.semiBoldTextFieldStyle(),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -361,9 +309,8 @@ class _DetailsState extends State<Details> {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
-                                                "\$${product['Price']}",
-                                                style: AppWidgets
-                                                    .lightTextFieldStyle(),
+                                                "\$${product['price']}",
+                                                style: AppWidgets.lightTextFieldStyle(),
                                               ),
                                             ),
                                           ],
@@ -379,65 +326,46 @@ class _DetailsState extends State<Details> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      if (!isLoading) {
-                        setState(() {
-                          isLoading = true; // Start loading
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: GestureDetector(
+                      onTap: () {
+                        FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(widget.id).set({
+                          "image": widget.image,
+                          "name": widget.name,
+                          "details": widget.details,
+                          "id": widget.id,
+                          "adminId": widget.adminId,
+                          "price": widget.price,
+                          "type": widget.type,
+                          "count": count,
+                        }).then((value){
+                          Navigator.pop(context);
+                          count == 1;
                         });
-
-                        Map<String, dynamic> addFoodToCart = {
-                          "Name": widget.name,
-                          "Quantity": a.toString(),
-                          "Total": total.toString(),
-                          "Image": widget.image,
-                        };
-
-                        try {
-                          await DatabaseServices()
-                              .addFoodToCart(addFoodToCart, id!);
-                          Utils.toastMessage("Food added to Cart Successfully");
-
-                          setState(() {
-                            buttonText = "Added to Cart"; // Update button text
-                            isLoading = false; // Stop loading
-                          });
-                        } catch (error) {
-                          Utils.toastMessage("Failed to add food to cart");
-
-                          setState(() {
-                            isLoading = false; // Stop loading even on error
-                          });
-                        }
-                      }
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        bottom: 10,
-                        right: 5,
-                        left: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0XFF8a4af3),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isLoading)
-                            SpinKitWave(color: Colors.white, size: 15)
-                          else
-                            Text(
-                              buttonText,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Poppins',
-                                fontSize: 20,
-                              ),
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width / 2,
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 10,
+                          right: 5,
+                          left: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0XFF8a4af3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Add To Card",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Poppins',
+                              fontSize: 20,
                             ),
-                        ],
+                          ),
+                        ),
                       ),
                     ),
                   )
@@ -445,4 +373,17 @@ class _DetailsState extends State<Details> {
               ),
             )));
   }
+}
+
+class CardModel{
+  List<ProductModel> productModel;
+  CardModel({required this.productModel});
+}
+
+
+class ProductModel{
+  final String image,name,description,type,adminId,id;
+  final int price,stock;
+  ProductModel({
+    required this.image,required this.name,required this.description,required this.type,required this.id,required this.adminId,required this.stock,required this.price});
 }

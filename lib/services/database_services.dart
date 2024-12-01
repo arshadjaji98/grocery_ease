@@ -15,12 +15,12 @@ class DatabaseServices {
 
   // Adds a food item to a specified collection (e.g., a category name).
   Future<void> addFoodItem(
-      Map<String, dynamic> foodItemMap, String categoryName) async {
-    await FirebaseFirestore.instance.collection(categoryName).add(foodItemMap);
+      Map<String, dynamic> foodItemMap) async {
+    await FirebaseFirestore.instance.collection("products").add(foodItemMap);
   }
 
   Stream<QuerySnapshot> getFoodItem(String categoryName) {
-    return FirebaseFirestore.instance.collection(categoryName).snapshots();
+    return FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("products").snapshots();
   }
 
   // Adds a food item to a specific user's 'Cart' subcollection.

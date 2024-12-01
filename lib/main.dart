@@ -1,8 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/firebase_options.dart';
-import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
-import 'package:groceryease_delivery_application/pages/registration/signup.dart';
+import 'package:groceryease_delivery_application/pages/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +22,19 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            titleTextStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          cardTheme: CardTheme(
+            color: Colors.white,
+          ),
+
         ),
-        home: const SignUp());
+        home: const SplashScreen());
   }
 }

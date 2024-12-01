@@ -1,14 +1,18 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_new
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
+import 'package:groceryease_delivery_application/pages/super_admin/super_admin_home_screen.dart';
+import 'package:groceryease_delivery_application/pages/user/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/pages/registration/forgot_password.dart';
 import 'package:groceryease_delivery_application/pages/registration/signup.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
+
+import '../admin/admin_home_screen.dart';
 
 class LogIn extends StatefulWidget {
   final void Function()? onTap;
@@ -24,35 +28,75 @@ class _LogInState extends State<LogIn> {
   bool _isLoading = false;
 
   final _formkey = GlobalKey<FormState>();
-  TextEditingController useremailcontroller = TextEditingController();
-  TextEditingController userpasswordcontroller = TextEditingController();
+  TextEditingController userEmailController = TextEditingController();
+  TextEditingController userPasswordController = TextEditingController();
 
   userLogin() async {
     if (_formkey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Start loading
+        _isLoading = true;
       });
 
       try {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
-
-        // Show a toast message or a snackbar
-        Utils.toastMessage("Login successful! Redirecting...");
-        await Future.delayed(const Duration(seconds: 1));
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNav()),
-        );
-      } on FirebaseAuthException catch (e) {
-        Utils.toastMessage(e.message ?? "An error occurred");
-      } catch (e) {
-        Utils.toastMessage("An error occurred: ${e.toString()}");
-      } finally {
         setState(() {
-          _isLoading =
-              false; // Stop loading after login is successful or failed
+          _isLoading = true; // Start loading
+        });
+
+        // Attempt login
+        final value = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        // Fetch user document
+        final doc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(value.user!.uid)
+            .get();
+
+        if (doc.exists && doc.data() != null) {
+          // Get user role
+          final userRole = doc.data()?['user_role'] as String?;
+
+          // Navigate based on role
+          if (userRole == "user") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const BottomNav()),
+            );
+          } else if (userRole == "admin") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeAdmin()),
+            );
+          } else if (userRole == "superAdmin") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const SuperAdminHomeScreen()),
+            );
+          } else {
+            Utils.toastMessage("Unknown user role.");
+          }
+        } else {
+          // No user document found
+          Utils.toastMessage("User record not found.");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LogIn()),
+          );
+        }
+
+        Utils.toastMessage("Login successful! Redirecting...");
+      } on FirebaseAuthException catch (e) {
+        // Firebase-specific error handling
+        Utils.toastMessage(e.message ?? "Authentication error occurred.");
+      } catch (e) {
+        // General error handling
+        Utils.toastMessage("An unexpected error occurred: ${e.toString()}");
+      } finally {
+        // Stop loading
+        setState(() {
+          _isLoading = false;
         });
       }
     }
@@ -86,14 +130,6 @@ class _LogInState extends State<LogIn> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 50),
-                  // Center(
-                  //   child: Image.asset(
-                  //     "assets/images/text logo.png",
-                  //     width: MediaQuery.of(context).size.width,
-                  //     height: 250,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: WebResponsive(
@@ -118,7 +154,7 @@ class _LogInState extends State<LogIn> {
                                     style: AppWidgets.headerTextFieldStyle()),
                                 const SizedBox(height: 30.0),
                                 TextFormField(
-                                  controller: useremailcontroller,
+                                  controller: userEmailController,
                                   validator: (value) => value!.isEmpty
                                       ? 'Please Enter Email'
                                       : null,
@@ -132,7 +168,7 @@ class _LogInState extends State<LogIn> {
                                 ),
                                 const SizedBox(height: 30.0),
                                 TextFormField(
-                                  controller: userpasswordcontroller,
+                                  controller: userPasswordController,
                                   validator: (value) => value!.isEmpty
                                       ? 'Please Enter Password'
                                       : null,
@@ -173,8 +209,8 @@ class _LogInState extends State<LogIn> {
                                   onTap: () {
                                     if (_formkey.currentState!.validate()) {
                                       setState(() {
-                                        email = useremailcontroller.text;
-                                        password = userpasswordcontroller.text;
+                                        email = userEmailController.text;
+                                        password = userPasswordController.text;
                                       });
                                       userLogin();
                                     }
@@ -218,7 +254,6 @@ class _LogInState extends State<LogIn> {
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 14,
-                                        decoration: TextDecoration.underline,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

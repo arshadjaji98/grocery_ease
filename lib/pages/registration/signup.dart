@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groceryease_delivery_application/pages/bottom_nav_bar.dart';
+import 'package:get/get_common/get_reset.dart';
+import 'package:groceryease_delivery_application/pages/admin/admin_home_screen.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/services/database_services.dart';
@@ -9,6 +11,8 @@ import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:random_string/random_string.dart';
+
+import '../user/bottom_nav_bar.dart';
 
 class SignUp extends StatefulWidget {
   final void Function()? onTap;
@@ -20,13 +24,13 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   bool _isLoading = false;
-  String email = "", password = "", name = "", phone = "", address = "";
 
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController phonecontroller = TextEditingController();
-  TextEditingController passwordcontroller = TextEditingController();
-  TextEditingController mailcontroller = TextEditingController();
-  TextEditingController addresscontroller = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  String? selectType;
 
   final _formkey = GlobalKey<FormState>();
 
@@ -34,52 +38,42 @@ class _SignUpState extends State<SignUp> {
     setState(() {
       _isLoading = true;
     });
-
-    if (password.isNotEmpty) {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
-
-        Utils.toastMessage("Registered Successfully");
-
-        String Id = randomAlphaNumeric(10);
-        String user = mailcontroller.text.replaceAll("@gmail.com", "replace");
-        String updateusername =
-            user.replaceFirst(user[0], user[0].toUpperCase());
-        String firstletter = user.substring(0, 1).toUpperCase();
-
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      ).
+      then((value){
         Map<String, dynamic> addUserInfo = {
-          "Name": updateusername,
-          "Email": mailcontroller.text,
-          "Wallet": "0",
-          "Phone": phonecontroller.text,
-          "Address": addresscontroller.text,
-          "Id": Id,
-          "SearchKey": firstletter
+          "name": nameController.text.trim(),
+          "email": value.user!.email.toString(),
+          "wallet": "0",
+          "phone": phoneController.text,
+          "address": addressController.text,
+          "id": value.user!.uid,
+          "favourite" : [],
+          "profile_image" : "",
+          "user_role" : selectType,
+          "date" : DateTime.now(),
+          "verify" : selectType == "admin" ? false : true,
         };
-
-        await DatabaseServices().addUserDetail(addUserInfo, Id);
-        await SharedPerfHelper().saveUserName(namecontroller.text);
-        await SharedPerfHelper().saveUserEmail(mailcontroller.text);
-        await SharedPerfHelper().saveUserPhone(phonecontroller.text);
-        await SharedPerfHelper().saveUserWallet('0');
-        await SharedPerfHelper().saveUserId(Id);
-        await SharedPerfHelper().saveUserAddress(addresscontroller.text);
-
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const BottomNav()));
-      } on FirebaseAuthException catch (e) {
+        FirebaseFirestore.instance.collection("users").doc(value.user!.uid).set(addUserInfo);
+        if(selectType == "admin"){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeAdmin()));
+        }else{
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const BottomNav()));
+        }
+        Utils.toastMessage("Registered Successfully");
+      }).onError((e,s){
         Utils.toastMessage(e.toString());
-      } catch (e) {
-        Utils.toastMessage(e.toString());
-      } finally {
-        setState(() {
-          _isLoading = false; // End loading
-        });
-      }
-    } else {
+      });
+    } on FirebaseAuthException catch (e) {
+      Utils.toastMessage(e.toString());
+    } catch (e) {
+      Utils.toastMessage(e.toString());
+    } finally {
       setState(() {
-        _isLoading = false;
+        _isLoading = false; // End loading
       });
     }
   }
@@ -98,15 +92,13 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
             Container(
-              margin:
-                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+              margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40))),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40),),
+              ),
             ),
             Center(
               child: SingleChildScrollView(
@@ -115,11 +107,6 @@ class _SignUpState extends State<SignUp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: 50),
-                    // Center(
-                    //     child: Image.asset("assets/images/text logo.png",
-                    //         width: MediaQuery.of(context).size.width,
-                    //         height: 200)),
-                    // const SizedBox(height: 30.0),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: WebResponsive(
@@ -132,50 +119,43 @@ class _SignUpState extends State<SignUp> {
                                 elevation: 5.0,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0, right: 20.0),
+                                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                                   width: MediaQuery.of(context).size.width,
-                                  // height:
-                                  //     MediaQuery.of(context).size.height / 1.5,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20)),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                   child: Form(
                                     key: _formkey,
                                     child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
+                                        const SizedBox(height: 20.0),
                                         Text(
                                           "Sign up",
-                                          style:
-                                              AppWidgets.headerTextFieldStyle(),
+                                          style: AppWidgets.headerTextFieldStyle(),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
-                                          controller: namecontroller,
+                                          controller: nameController,
                                           validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
+                                            if (value == null || value.isEmpty) {
                                               return 'Please Enter Name';
                                             }
                                             return null;
                                           },
                                           decoration: InputDecoration(
-                                              hintText: 'Name',
-                                              hintStyle: AppWidgets
-                                                  .semiBoldTextFieldStyle(),
-                                              prefixIcon: const Icon(
-                                                  Icons.person_outlined)),
+                                            hintText: 'Name',
+                                            hintStyle: AppWidgets.semiBoldTextFieldStyle(),
+                                            prefixIcon: const Icon(Icons.person_outlined),
+                                          ),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
-                                          controller: addresscontroller,
+                                          controller: addressController,
                                           validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
+                                            if (value == null || value.isEmpty) {
                                               return 'Please Enter Address';
                                             }
                                             return null;
@@ -185,12 +165,12 @@ class _SignUpState extends State<SignUp> {
                                               hintStyle: AppWidgets
                                                   .semiBoldTextFieldStyle(),
                                               prefixIcon:
-                                                  Icon(Icons.location_on)),
+                                              Icon(Icons.location_on)),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
                                           keyboardType: TextInputType.number,
-                                          controller: phonecontroller,
+                                          controller: phoneController,
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
@@ -207,7 +187,7 @@ class _SignUpState extends State<SignUp> {
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
-                                          controller: mailcontroller,
+                                          controller: emailController,
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
@@ -224,7 +204,7 @@ class _SignUpState extends State<SignUp> {
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
-                                          controller: passwordcontroller,
+                                          controller: passwordController,
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
@@ -241,58 +221,76 @@ class _SignUpState extends State<SignUp> {
                                                   Icons.password_outlined)),
                                         ),
                                         const SizedBox(height: 20.0),
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                              child: RadioListTile(
+                                                title: Text("User"),
+                                                value: "user",
+                                                groupValue: selectType,
+                                                onChanged: (value){
+                                                  selectType = value;
+                                                  setState(() {
+
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            Flexible(
+                                              child: RadioListTile(
+                                                title: Text("Admin"),
+                                                value: "admin",
+                                                groupValue: selectType,
+                                                onChanged: (value){
+                                                  selectType = value;
+                                                  setState(() {
+
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20.0),
                                         GestureDetector(
                                           onTap: () async {
-                                            if (_formkey.currentState!
-                                                .validate()) {
-                                              setState(() {
-                                                email = mailcontroller.text;
-                                                name = namecontroller.text;
-                                                password =
-                                                    passwordcontroller.text;
-                                              });
+                                            if (_formkey.currentState!.validate()) {
+                                              setState(() {});
                                               await registration();
                                             }
                                           },
                                           child: Material(
                                             elevation: 5.0,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20),
                                             child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
+                                              padding: const EdgeInsets.symmetric(vertical: 8.0),
                                               width: 200,
                                               decoration: BoxDecoration(
                                                 color: const Color(0XFF8a4af3),
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
+                                                borderRadius: BorderRadius.circular(20),
                                               ),
-                                              child: _isLoading
-                                                  ? const Center(
-                                                      child: SpinKitWave(
-                                                          size: 20,
-                                                          color: Colors.white))
-                                                  : const Center(
-                                                      child: Text(
-                                                        "SIGN IN",
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 18.0,
-                                                          fontFamily:
-                                                              'Poppins1',
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
+                                              child: _isLoading ?
+                                              const Center(child: SpinKitWave(size: 20, color: Colors.white)) :
+                                              const Center(
+                                                child: Text(
+                                                  "SIGN IN",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18.0,
+                                                    fontFamily:
+                                                    'Poppins1',
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                         const SizedBox(height: 10.0),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                           children: [
                                             const Text(
                                               "Don't have an account? ",
@@ -300,7 +298,7 @@ class _SignUpState extends State<SignUp> {
                                                   fontFamily: 'Poppins',
                                                   fontSize: 14,
                                                   decoration:
-                                                      TextDecoration.underline,
+                                                  TextDecoration.underline,
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             TextButton(
@@ -309,19 +307,20 @@ class _SignUpState extends State<SignUp> {
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              const LogIn()));
+                                                          const LogIn()));
                                                 },
                                                 child: const Text("Login",
                                                     style: TextStyle(
                                                         fontFamily: 'Poppins',
                                                         fontSize: 18,
                                                         decoration:
-                                                            TextDecoration
-                                                                .underline,
+                                                        TextDecoration
+                                                            .underline,
                                                         fontWeight:
-                                                            FontWeight.bold))),
+                                                        FontWeight.bold))),
                                           ],
                                         ),
+                                        const SizedBox(height: 10.0),
                                       ],
                                     ),
                                   ),
@@ -332,9 +331,9 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: [Text("Sign in with google")],
-                    )
+                    // Row(
+                    //   children: [Text("Sign in with google")],
+                    // )
                   ],
                 ),
               ),

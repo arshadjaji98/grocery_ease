@@ -1,9 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:groceryease_delivery_application/pages/home.dart';
-import 'package:groceryease_delivery_application/pages/order.dart';
-import 'package:groceryease_delivery_application/pages/profile.dart';
-import 'package:groceryease_delivery_application/pages/favorite.dart';
+import 'package:groceryease_delivery_application/pages/user/profile.dart';
+import 'package:groceryease_delivery_application/pages/user/favorite.dart';
+
+import '../home.dart';
+import 'order.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
