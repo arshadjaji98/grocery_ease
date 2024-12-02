@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
   final String image, name, details, price, id,adminId,stock,type;
+  final List favourite;
 
   const Details(
       {super.key,
@@ -18,6 +20,7 @@ class Details extends StatefulWidget {
       required this.id,
       required this.adminId,
       required this.type,
+      required this.favourite,
       });
 
   @override
@@ -189,14 +192,42 @@ class _DetailsState extends State<Details> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Delivery Time",
-                            style: AppWidgets.semiBoldTextFieldStyle()),
-                        const SizedBox(width: 25),
-                        Text("30 min",
-                            style: AppWidgets.semiBoldTextFieldStyle()),
-                        const SizedBox(width: 5),
-                        const Icon(Icons.alarm, color: Colors.black54),
+                        Row(
+                          children: [
+                            Text("Delivery Time", style: AppWidgets.semiBoldTextFieldStyle()),
+                            const SizedBox(width: 25),
+                            Text("30 min", style: AppWidgets.semiBoldTextFieldStyle()),
+                            const SizedBox(width: 5),
+                            const Icon(Icons.alarm, color: Colors.black54),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
+                              onPressed: (){
+                                if(widget.favourite.contains(FirebaseAuth.instance.currentUser!.uid)){
+                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+                                    "favourite": FieldValue.arrayRemove([widget.id]),
+                                  });
+                                  FirebaseFirestore.instance.collection("products").doc(widget.id).update({
+                                    "favourite" : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid.toString()]),
+                                  });
+                                }else{
+                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+                                    "favourite": FieldValue.arrayUnion([widget.id]),
+                                  });
+                                  FirebaseFirestore.instance.collection("products").doc(widget.id).update({
+                                    "favourite" : FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid.toString()]),
+                                  });
+                                }
+                                },
+                              icon: Icon(widget.favourite.contains(FirebaseAuth.instance.currentUser!.uid) ? CupertinoIcons.heart_fill : CupertinoIcons.heart,color: Colors.deepPurple,),
+                            ),
+                            Text(widget.favourite.length.toString()),
+                          ],
+                        )
                       ],
                     ),
                   ),

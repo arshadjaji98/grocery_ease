@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "4.1.1"
   cached_network_image_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cached_network_image_web
       sha256: "980842f4e8e2535b8dbd3d5ca0b1f0ba66bf61d14cc3a17a9b4788a3685ba062"
@@ -526,7 +526,7 @@ packages:
     source: hosted
     version: "0.2.1+1"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf

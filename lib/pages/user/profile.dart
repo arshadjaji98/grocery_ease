@@ -59,25 +59,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.userRole == "admin" ?
-      Column(
-        children: [
-          Card(
-            child: ListTile(
-              title: const Text("Products"),
-              onTap: (){
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => MyProducts(userId: widget.userId,)));
-              },
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: Text("Orders"),
-            ),
-          ),
-        ],
-      ) :
-      StreamBuilder(
+      body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection("users").doc(widget.userId ?? FirebaseAuth.instance.currentUser?.uid).snapshots(),
         builder: (context,snapshot){
           if(snapshot.hasData){
@@ -90,8 +72,7 @@ class _ProfileState extends State<Profile> {
                     Stack(
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                              top: 45.0, left: 20.0, right: 20.0),
+                          padding: const EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
                           height: MediaQuery.of(context).size.height / 4.3,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
@@ -146,7 +127,7 @@ class _ProfileState extends State<Profile> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Welcome  " + data["Name"],
+                                "Welcome  " + data["name"],
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 23.0,
@@ -251,7 +232,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    data["Name"],
+                                    data["name"],
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -298,7 +279,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    data["Email"],
+                                    data["email"],
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -347,7 +328,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    data["Phone"].toString(),
+                                    data["phone"].toString(),
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.0,
@@ -396,7 +377,7 @@ class _ProfileState extends State<Profile> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    data["Address"],
+                                    data["address"],
                                     style: const TextStyle(
                                         fontSize: 16, color: Colors.white),
                                   ),

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -20,12 +22,13 @@ class _AddFoodState extends State<AddFood> {
     'Meat',
     'Beverages',
     'Backery',
-    'oil'
+    'Oil'
   ];
   String? value;
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController pricecontroller = TextEditingController();
-  TextEditingController detailcontroller = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController detailController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
 
@@ -37,25 +40,29 @@ class _AddFoodState extends State<AddFood> {
   }
 
   uploadItem() async {
-    if (selectedImage != null &&
-        namecontroller.text != "" &&
-        pricecontroller.text != "" &&
-        detailcontroller.text != "") {
+    if (selectedImage != null && nameController.text != "" && priceController.text != "" && detailController.text != "" && quantityController.text != "") {
       String addId = randomAlphaNumeric(10);
-
       Reference firebaseStorageRef =
       FirebaseStorage.instance.ref().child("blogImages").child(addId);
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
       var downloadUrl = await (await task).ref.getDownloadURL();
 
+      var productId = FirebaseFirestore.instance.collection("products").doc();
+
       Map<String, dynamic> addItem = {
-        "Image": downloadUrl,
-        "Name": namecontroller.text,
-        "Price": pricecontroller.text,
-        "Detail": detailcontroller.text
+        "image": downloadUrl,
+        "name": nameController.text,
+        "price": priceController.text,
+        "quantity": quantityController.text,
+        "detail": detailController.text,
+        "date" : DateTime.now(),
+        "adminId" : FirebaseAuth.instance.currentUser!.uid,
+        "type" : value,
+        "id" : productId.id,
+        "favourite" : [],
       };
-      await DatabaseServices().addFoodItem(addItem).then((value) {
+      await FirebaseFirestore.instance.collection("products").doc(productId.id).set(addItem).then((value) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
@@ -63,9 +70,10 @@ class _AddFoodState extends State<AddFood> {
               style: TextStyle(fontSize: 18.0),
             )));
 
-        namecontroller.clear();
-        pricecontroller.clear();
-        detailcontroller.clear();
+        nameController.clear();
+        priceController.clear();
+        detailController.clear();
+        quantityController.clear();
         selectedImage = null;
         this.value = null;
 
@@ -169,7 +177,7 @@ class _AddFoodState extends State<AddFood> {
                     color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
-                  controller: namecontroller,
+                  controller: nameController,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Enter Item Name",
@@ -193,7 +201,7 @@ class _AddFoodState extends State<AddFood> {
                     color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
-                  controller: pricecontroller,
+                  controller: priceController,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Enter Item Price",
@@ -218,7 +226,7 @@ class _AddFoodState extends State<AddFood> {
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   maxLines: 6,
-                  controller: detailcontroller,
+                  controller: detailController,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Enter Item Detail",
@@ -234,6 +242,22 @@ class _AddFoodState extends State<AddFood> {
               ),
               const SizedBox(
                 height: 20.0,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(color: const Color(0xFFececf8), borderRadius: BorderRadius.circular(10)),
+                child: TextField(
+                  controller: quantityController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Enter Quantity",
+                    hintStyle: AppWidgets.semiBoldTextFieldStyle(),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),

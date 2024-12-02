@@ -38,7 +38,7 @@ class _FavoriteState extends State<Favorite> {
 
             if (favouriteIds.isEmpty) {
               return Center(
-                child: Text("No favourite products found."),
+                child: Text("No favourite products found.",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
               );
             }
 

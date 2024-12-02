@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/pages/super_admin/admin_detail_screen.dart';
 
 import '../user/profile.dart';
 
@@ -37,7 +38,7 @@ class AllAdminScreen extends StatelessWidget {
                       child: Text("Not Verify",style: TextStyle(color: Colors.white),),
                     ),
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId: data["id"],userRole: data["user_role"],)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AdminDetailScreen(adminID: snapshot.data!.docs[index]["id"],)));
                     },
                   ),
                 );

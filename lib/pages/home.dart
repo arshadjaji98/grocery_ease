@@ -167,7 +167,7 @@ class _HomeState extends State<Home> {
                           child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
                     }
                     if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                      return const Center(child: Text("No items available"));
+                      return const Center(child: Text("No items available",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)));
                     }
 
                     return ListView.builder(
@@ -191,6 +191,7 @@ class _HomeState extends State<Home> {
                                   stock: ds['quantity'].toString(),
                                   adminId: ds['adminId'],
                                   type: ds['type'],
+                                  favourite: ds["favourite"],
                                 ),
                               ),
                             );
@@ -200,11 +201,11 @@ class _HomeState extends State<Home> {
                             child: Container(
                               margin: const EdgeInsets.all(4),
                               child: Material(
+                                color: Colors.white,
                                 elevation: 5,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -254,7 +255,7 @@ class _HomeState extends State<Home> {
                     return Center(child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
                   }
                   if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                    return const Center(child: Text("No items available"));
+                    return const Center(child: Text("No items available",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)));
                   }
 
                   return ListView.builder(
@@ -278,7 +279,7 @@ class _HomeState extends State<Home> {
                                   stock: ds['quantity'].toString(),
                                   adminId: ds['adminId'],
                                   type: ds['type'],
-
+                                  favourite: ds["favourite"],
                                 )),
                           );
                         },
@@ -286,6 +287,7 @@ class _HomeState extends State<Home> {
                           margin: const EdgeInsets.only(right: 20, bottom: 20),
                           child: Material(
                             elevation: 5,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               padding: const EdgeInsets.all(5),

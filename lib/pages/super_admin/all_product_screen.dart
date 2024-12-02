@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../services/database_services.dart';
 
-class MyProducts extends StatefulWidget {
-  const MyProducts({super.key});
-
+class AllProductsDetail extends StatefulWidget {
+  const AllProductsDetail({required this.adminId,super.key});
+  final String adminId;
   @override
-  State<MyProducts> createState() => _MyProductsState();
+  State<AllProductsDetail> createState() => _AllProductsDetailState();
 }
 
-class _MyProductsState extends State<MyProducts> {
+class _AllProductsDetailState extends State<AllProductsDetail> {
   String? selectedCategory;
   final List<String> categories = [
     'Fruit',
@@ -47,7 +46,7 @@ class _MyProductsState extends State<MyProducts> {
             const SizedBox(height: 20.0),
             Expanded(
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("products").where("adminId",isEqualTo: FirebaseAuth.instance.currentUser!.uid).where("type",isEqualTo: selectedCategory).snapshots(),
+                stream: FirebaseFirestore.instance.collection("products").where("adminId",isEqualTo: widget.adminId).where("type",isEqualTo: selectedCategory).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());

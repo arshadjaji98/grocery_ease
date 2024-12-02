@@ -1,5 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/pages/user/order_screen.dart';
 import 'package:groceryease_delivery_application/pages/user/profile.dart';
 import 'package:groceryease_delivery_application/pages/user/favorite.dart';
 
@@ -22,10 +24,12 @@ class _BottomNavState extends State<BottomNav> {
       case 0:
         return Home();
       case 1:
-        return Order();
+        return Cart();
       case 2:
-        return Favorite();
+        return OrderScreen();
       case 3:
+        return Favorite();
+      case 4:
         return Profile();
       default:
         return Home();
@@ -46,10 +50,11 @@ class _BottomNavState extends State<BottomNav> {
           });
         },
         items: [
-          Icon(Icons.home_outlined, color: Colors.white),
-          Icon(Icons.shopping_bag_outlined, color: Colors.white),
-          Icon(Icons.favorite, color: Colors.white),
-          Icon(Icons.person_outlined, color: Colors.white)
+          Icon(CupertinoIcons.home, color: Colors.white),
+          Icon(CupertinoIcons.bag, color: Colors.white),
+          Icon(CupertinoIcons.cube_box, color: Colors.white),
+          Icon(CupertinoIcons.heart, color: Colors.white),
+          Icon(CupertinoIcons.person, color: Colors.white)
         ],
       ),
       body: getPage(currentTab),
