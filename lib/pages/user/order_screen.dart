@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     trailing: Text("Rs. " + snapshot.data!.docs[index]["totalAmount"].toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
                     children: [
                       SizedBox(
-                        height: 200, // Set a fixed height for the list
+                        height: 200,
                         child: ListView.builder(
                           itemCount: snapshot.data!.docs[index]["items"].length,
                           itemBuilder: (context, i) {

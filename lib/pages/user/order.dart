@@ -26,11 +26,7 @@ class _CartState extends State<Cart> {
           children: [
             Expanded(
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("card")
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     double totalAmount = snapshot.data!.docs.fold(0, (sum, doc) {
@@ -69,10 +65,7 @@ class _CartState extends State<Cart> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(item["name"],
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
+                                        Text(item["name"], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                         Text("Price: \$${item["price"]}"),
                                       ],
                                     ),
@@ -82,13 +75,7 @@ class _CartState extends State<Cart> {
                                       children: [
                                         IconButton(
                                           onPressed: () {
-                                            FirebaseFirestore.instance
-                                                .collection("users")
-                                                .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
-                                                .collection("card")
-                                                .doc(item.id)
-                                                .delete();
+                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(item.id).delete();
                                           },
                                           icon: const Icon(
                                             CupertinoIcons.delete,
@@ -103,13 +90,7 @@ class _CartState extends State<Cart> {
                                                 int count = int.parse(
                                                     item["count"].toString());
                                                 if (count > 1) {
-                                                  FirebaseFirestore.instance
-                                                      .collection("users")
-                                                      .doc(FirebaseAuth.instance
-                                                      .currentUser!.uid)
-                                                      .collection("card")
-                                                      .doc(item.id)
-                                                      .update({
+                                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(item.id).update({
                                                     "count": count - 1,
                                                   });
                                                 }
@@ -272,7 +253,7 @@ class _CartState extends State<Cart> {
                                         "totalAmount": totalAmount,
                                         "paymentMethod": selectPayment,
                                         "timestamp": FieldValue.serverTimestamp(),
-
+                                        "userId" : FirebaseAuth.instance.currentUser!.uid,
                                       });
                                     }
 

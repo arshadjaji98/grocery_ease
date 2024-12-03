@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
+import 'package:intl/intl.dart';
 
 import '../../services/image_picker.dart';
 import '../../widgets/widget_support.dart';
@@ -132,18 +133,108 @@ class _HomeAdminState extends State<HomeAdmin> {
 
         )
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Your Orders",
-              style: AppWidgets.boldTextFieldStyle(),
-            )
-          ],
-        ),
-      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").orderBy("timestamp",descending: true).snapshots(),
+        builder: (context,snapshot){
+          if(snapshot.hasData){
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context,index){
+                DateTime dateTime = (snapshot.data!.docs[index]["timestamp"] as Timestamp).toDate();
+                var orderDate = DateFormat('dd-MM-yyyy').format(dateTime);
+                return Card(
+                  child: ExpansionTile(
+                    leading: Text("${index + 1}"),
+                    title: Text(orderDate,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 12,color: Colors.grey)),
+                    subtitle: Text(snapshot.data!.docs[index]["paymentMethod"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
+                    trailing: Text("Rs. " + snapshot.data!.docs[index]["totalAmount"].toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
+                    children: [
+                      SizedBox(
+                        height: 70,
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.docs[index]["items"].length,
+                          itemBuilder: (context, i) {
+                            return ListTile(
+                              leading: Text("${i + 1}"),
+                              title: Text(snapshot.data!.docs[index]["items"][i]["name"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
+                              subtitle: Row(
+                                children: [
+                                  Text("Rs. " + snapshot.data!.docs[index]["items"][i]["price"]),
+                                  SizedBox(width: 10,),
+                                  Text("Qty. " + snapshot.data!.docs[index]["items"][i]["count"].toString()),
+                                ],
+                              ),
+                              trailing: ElevatedButton(
+                                onPressed: (){
+                                 showDialog(
+                                   context: context,
+                                   builder: (context){
+                                     return AlertDialog(
+                                       title: const Text("Product"),
+                                       content: Row(
+                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                         children: [
+                                           ElevatedButton(
+                                             onPressed: ()async{
+                                               await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
+                                                 if (docSnapshot.exists) {
+                                                   List items = docSnapshot.data()!["items"];
+                                                   items[i]["orderType"] = "Reject";
+                                                   FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
+                                                 }
+                                               });
+                                               FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
+                                                 if (docSnapshot.exists) {
+                                                   List items = docSnapshot.data()!["items"];
+                                                   items[i]["orderType"] = "Reject";
+                                                   FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
+                                                 }
+                                               });
+                                             },
+                                             child: const Text("Reject"),
+                                           ),
+                                           ElevatedButton(
+                                             onPressed: ()async{
+                                               await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
+                                                 if (docSnapshot.exists) {
+                                                   List items = docSnapshot.data()!["items"];
+                                                   items[i]["orderType"] = "Accept";
+                                                   FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
+                                                 }
+                                               });
+
+                                               FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
+                                                 if (docSnapshot.exists) {
+                                                   List items = docSnapshot.data()!["items"];
+                                                   items[i]["orderType"] = "Accept";
+                                                   FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
+                                                 }
+                                               });
+                                             },
+                                             child: const Text("Accept"),
+                                           ),
+                                         ],
+                                       ),
+                                     );
+                                   },
+                                 );
+                                },
+                                child: Text(snapshot.data!.docs[index]["items"][i]["orderType"]),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }else{
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      )
     );
   }
 }
