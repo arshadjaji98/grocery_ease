@@ -66,7 +66,7 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
                             itemBuilder: (context, i) {
                               return ListTile(
                                 leading: Text("${i + 1}"),
-                                title: Text(snapshot.data!.docs[index]["items"][i]["name"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
+                                title: Text(snapshot.data!.docs[index]["items"][i]["name"],style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
                                 subtitle: Row(
                                   children: [
                                     Text("Rs. " + snapshot.data!.docs[index]["items"][i]["price"]),
@@ -74,6 +74,7 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
                                     Text("Qty. " + snapshot.data!.docs[index]["items"][i]["count"].toString()),
                                   ],
                                 ),
+                                trailing: Text(snapshot.data!.docs[index]["items"][i]["orderType"],style: const TextStyle(fontWeight: FontWeight.normal,fontSize: 16,color: Colors.black)),
                               );
                             },
                           ),
