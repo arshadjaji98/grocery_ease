@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
+import 'package:groceryease_delivery_application/pages/super_admin/admin_all_products_screen.dart';
 import 'package:groceryease_delivery_application/pages/super_admin/all_admin_screen.dart';
 import 'package:groceryease_delivery_application/pages/super_admin/all_users_screen.dart';
 
@@ -16,7 +17,7 @@ class _SuperAdminHomeScreenState extends State<SuperAdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('TabBar Example'),
@@ -34,6 +35,7 @@ class _SuperAdminHomeScreenState extends State<SuperAdminHomeScreen> {
             tabs: [
               Tab(icon: Icon(CupertinoIcons.person), text: 'Users'),
               Tab(icon: Icon(CupertinoIcons.shield), text: 'Admin'),
+              Tab(icon: Icon(CupertinoIcons.shield), text: 'All Products'),
             ],
           ),
         ),
@@ -41,6 +43,7 @@ class _SuperAdminHomeScreenState extends State<SuperAdminHomeScreen> {
           children: [
             AllUsersScreen(),
             AllAdminScreen(),
+            AdminAllProductsScreen()
           ],
         ),
       ),

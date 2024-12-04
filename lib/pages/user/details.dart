@@ -416,7 +416,7 @@ class _DetailsState extends State<Details> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(widget.price,
+                          Text("Price \$" + widget.price,
                               style: AppWidgets.boldTextFieldStyle()),
                           Container(
                             width: MediaQuery.of(context).size.width / 2,

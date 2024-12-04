@@ -67,8 +67,8 @@ class CardBox extends StatelessWidget {
                     height: size.height * 0.2,
                   ),
                 ),
-                height: size.height * 0.2, // Responsive height
-                width: double.infinity,
+                height: size.height * 0.15, // Responsive height
+                width: 200,
                 fit: BoxFit.cover, // Maintains aspect ratio
               ),
             ),

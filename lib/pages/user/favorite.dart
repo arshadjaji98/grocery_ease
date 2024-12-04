@@ -96,9 +96,7 @@ class _FavoriteState extends State<Favorite> {
                               ]),
                             });
                           },
-                          onTap: () {
-                            // Handle product tap
-                          },
+                          onTap: () {},
                         ),
                       );
                     },
