@@ -13,18 +13,21 @@ class Favorite extends StatefulWidget {
 }
 
 class _FavoriteState extends State<Favorite> {
-
-
-
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Get the screen size
+    final isMobile = size.width < 600; // Define mobile screen breakpoint
+    final crossAxisCount =
+        isMobile ? 2 : 4; // Use 2 columns for mobile, 4 for larger screens
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("My Favourite"),
+        title: const Text("My Favourite"),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -37,8 +40,11 @@ class _FavoriteState extends State<Favorite> {
             List<dynamic> favouriteIds = userSnapshot.data!["favourite"] ?? [];
 
             if (favouriteIds.isEmpty) {
-              return Center(
-                child: Text("No favourite products found.",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
+              return const Center(
+                child: Text(
+                  "No favourite products found.",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               );
             }
 
@@ -51,11 +57,13 @@ class _FavoriteState extends State<Favorite> {
               builder: (context, productSnapshot) {
                 if (productSnapshot.hasData) {
                   return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 6 / 7.5,
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio:
+                          isMobile ? 6 / 8 : 5 / 6, // Adjust aspect ratio
                     ),
                     itemCount: productSnapshot.data!.docs.length,
                     itemBuilder: (context, index) {
@@ -67,7 +75,10 @@ class _FavoriteState extends State<Favorite> {
                           title: product["name"].toString(),
                           price: product["price"].toString(),
                           count: product["quantity"].toString(),
-                          icon: product["favourite"].contains(FirebaseAuth.instance.currentUser!.uid) ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                          icon: product["favourite"].contains(
+                                  FirebaseAuth.instance.currentUser!.uid)
+                              ? CupertinoIcons.heart_fill
+                              : CupertinoIcons.heart,
                           onPressed: () {
                             FirebaseFirestore.instance
                                 .collection("users")
@@ -75,8 +86,14 @@ class _FavoriteState extends State<Favorite> {
                                 .update({
                               "favourite": FieldValue.arrayRemove([product.id]),
                             });
-                            FirebaseFirestore.instance.collection("products").doc(product["id"]).update({
-                              "favourite" : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid.toString()]),
+                            FirebaseFirestore.instance
+                                .collection("products")
+                                .doc(product["id"])
+                                .update({
+                              "favourite": FieldValue.arrayRemove([
+                                FirebaseAuth.instance.currentUser!.uid
+                                    .toString()
+                              ]),
                             });
                           },
                           onTap: () {
@@ -87,20 +104,19 @@ class _FavoriteState extends State<Favorite> {
                     },
                   );
                 } else if (productSnapshot.hasError) {
-                  return Center(
+                  return const Center(
                     child: Text("Error fetching favourite products."),
                   );
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
               },
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
-      )
-
+      ),
     );
   }
 }

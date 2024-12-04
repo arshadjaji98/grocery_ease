@@ -30,7 +30,6 @@ class _HomeAdminState extends State<HomeAdmin> {
     super.initState();
   }
 
-
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.pushReplacement(
@@ -44,15 +43,18 @@ class _HomeAdminState extends State<HomeAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Home Admin"),
-      ),
-      drawer: SafeArea(
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
-          builder: (context,snapshot){
-            if(snapshot.hasData){
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("Home Admin"),
+        ),
+        drawer: SafeArea(
+            child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
               return Drawer(
                 backgroundColor: Colors.white,
                 child: ListView(
@@ -68,21 +70,23 @@ class _HomeAdminState extends State<HomeAdmin> {
                             return InkWell(
                               onTap: () async {
                                 controller.pickImage();
-                                imgUrl = await controller.uploadImageToFirebase();
+                                imgUrl =
+                                    await controller.uploadImageToFirebase();
                               },
                               child: CircleAvatar(
                                 radius: 50,
                                 child: ClipOval(
                                   child: controller.image.value == null ||
-                                      controller.image.value!.path == ''
-                                      ? Image.network(snapshot.data!.data()!["profile_image"])
+                                          controller.image.value!.path == ''
+                                      ? Image.network(snapshot.data!
+                                          .data()!["profile_image"])
                                       : AspectRatio(
-                                    aspectRatio: 1.0,
-                                    child: Image.file(
-                                      controller.image.value!,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
+                                          aspectRatio: 1.0,
+                                          child: Image.file(
+                                            controller.image.value!,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                 ),
                               ),
                             );
@@ -95,146 +99,281 @@ class _HomeAdminState extends State<HomeAdmin> {
                       ),
                     ),
                     ListTile(
-                      leading: const Icon(CupertinoIcons.add_circled, color: Color(0XFF8a4af3)),
-                      title: const Text('Add Product',
+                      leading: const Icon(CupertinoIcons.add_circled,
+                          color: Color(0XFF8a4af3)),
+                      title: const Text(
+                        'Add Product',
                         style: TextStyle(color: Color(0XFF8a4af3)),
                       ),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFood()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AddFood()));
                       },
                     ),
                     ListTile(
-                      leading:
-                      const Icon(CupertinoIcons.chat_bubble, color: Color(0XFF8a4af3)),
-                      title: const Text('Chat Screen', style: TextStyle(color: Color(0XFF8a4af3))),
+                      leading: const Icon(CupertinoIcons.chat_bubble,
+                          color: Color(0XFF8a4af3)),
+                      title: const Text('Chat Screen',
+                          style: TextStyle(color: Color(0XFF8a4af3))),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreens()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const NotificationsScreens()));
                       },
                     ),
                     ListTile(
-                      leading: const Icon(CupertinoIcons.cube_box, color: Color(0XFF8a4af3)),
-                      title: const Text('My Products', style: TextStyle(color: Color(0XFF8a4af3))),
+                      leading: const Icon(CupertinoIcons.cube_box,
+                          color: Color(0XFF8a4af3)),
+                      title: const Text('My Products',
+                          style: TextStyle(color: Color(0XFF8a4af3))),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyProducts()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyProducts()));
                       },
                     ),
                     ListTile(
-                      leading: const Icon(CupertinoIcons.arrow_right_square, color: Color(0XFF8a4af3)),
-                      title: const Text('Logout', style: TextStyle(color: Color(0XFF8a4af3))),
+                      leading: const Icon(CupertinoIcons.arrow_right_square,
+                          color: Color(0XFF8a4af3)),
+                      title: const Text('Logout',
+                          style: TextStyle(color: Color(0XFF8a4af3))),
                       onTap: signOut,
                     ),
                   ],
                 ),
               );
-            }else{
+            } else {
               return Center(child: SizedBox());
             }
           },
+        )),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection("orders")
+              .orderBy("timestamp", descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  DateTime dateTime =
+                      (snapshot.data!.docs[index]["timestamp"] as Timestamp)
+                          .toDate();
+                  var orderDate = DateFormat('dd-MM-yyyy').format(dateTime);
+                  return Card(
+                    child: ExpansionTile(
+                      leading: Text("${index + 1}"),
+                      title: Text(orderDate,
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 12,
+                              color: Colors.grey)),
+                      subtitle: Text(
+                          snapshot.data!.docs[index]["paymentMethod"],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black)),
+                      trailing: Text(
+                          "Rs. " +
+                              snapshot.data!.docs[index]["totalAmount"]
+                                  .toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black)),
+                      children: [
+                        SizedBox(
+                          height: 70,
+                          child: ListView.builder(
+                            itemCount:
+                                snapshot.data!.docs[index]["items"].length,
+                            itemBuilder: (context, i) {
+                              return ListTile(
+                                leading: Text("${i + 1}"),
+                                title: Text(
+                                    snapshot.data!.docs[index]["items"][i]
+                                        ["name"],
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.black)),
+                                subtitle: Row(
+                                  children: [
+                                    Text("Rs. " +
+                                        snapshot.data!.docs[index]["items"][i]
+                                            ["price"]),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text("Qty. " +
+                                        snapshot.data!
+                                            .docs[index]["items"][i]["count"]
+                                            .toString()),
+                                  ],
+                                ),
+                                trailing: ElevatedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text("Product"),
+                                          content: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection("users")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                      .collection("orders")
+                                                      .doc(snapshot
+                                                          .data!.docs[index].id)
+                                                      .get()
+                                                      .then((docSnapshot) {
+                                                    if (docSnapshot.exists) {
+                                                      List items = docSnapshot
+                                                          .data()!["items"];
+                                                      items[i]["orderType"] =
+                                                          "Reject";
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .doc(FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid)
+                                                          .collection("orders")
+                                                          .doc(snapshot.data!
+                                                              .docs[index].id)
+                                                          .update(
+                                                              {"items": items});
+                                                    }
+                                                  });
+                                                  FirebaseFirestore.instance
+                                                      .collection("users")
+                                                      .doc(snapshot
+                                                              .data!.docs[index]
+                                                          ["userId"])
+                                                      .collection("orders")
+                                                      .doc(snapshot
+                                                          .data!.docs[index].id)
+                                                      .get()
+                                                      .then((docSnapshot) {
+                                                    if (docSnapshot.exists) {
+                                                      List items = docSnapshot
+                                                          .data()!["items"];
+                                                      items[i]["orderType"] =
+                                                          "Reject";
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .doc(snapshot.data!
+                                                                  .docs[index]
+                                                              ["userId"])
+                                                          .collection("orders")
+                                                          .doc(snapshot.data!
+                                                              .docs[index].id)
+                                                          .update(
+                                                              {"items": items});
+                                                    }
+                                                  });
+                                                },
+                                                child: const Text("Reject"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection("users")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                      .collection("orders")
+                                                      .doc(snapshot
+                                                          .data!.docs[index].id)
+                                                      .get()
+                                                      .then((docSnapshot) {
+                                                    if (docSnapshot.exists) {
+                                                      List items = docSnapshot
+                                                          .data()!["items"];
+                                                      items[i]["orderType"] =
+                                                          "Accept";
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .doc(FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid)
+                                                          .collection("orders")
+                                                          .doc(snapshot.data!
+                                                              .docs[index].id)
+                                                          .update(
+                                                              {"items": items});
+                                                    }
+                                                  });
 
-        )
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").orderBy("timestamp",descending: true).snapshots(),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context,index){
-                DateTime dateTime = (snapshot.data!.docs[index]["timestamp"] as Timestamp).toDate();
-                var orderDate = DateFormat('dd-MM-yyyy').format(dateTime);
-                return Card(
-                  child: ExpansionTile(
-                    leading: Text("${index + 1}"),
-                    title: Text(orderDate,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 12,color: Colors.grey)),
-                    subtitle: Text(snapshot.data!.docs[index]["paymentMethod"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
-                    trailing: Text("Rs. " + snapshot.data!.docs[index]["totalAmount"].toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
-                    children: [
-                      SizedBox(
-                        height: 70,
-                        child: ListView.builder(
-                          itemCount: snapshot.data!.docs[index]["items"].length,
-                          itemBuilder: (context, i) {
-                            return ListTile(
-                              leading: Text("${i + 1}"),
-                              title: Text(snapshot.data!.docs[index]["items"][i]["name"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
-                              subtitle: Row(
-                                children: [
-                                  Text("Rs. " + snapshot.data!.docs[index]["items"][i]["price"]),
-                                  SizedBox(width: 10,),
-                                  Text("Qty. " + snapshot.data!.docs[index]["items"][i]["count"].toString()),
-                                ],
-                              ),
-                              trailing: ElevatedButton(
-                                onPressed: (){
-                                 showDialog(
-                                   context: context,
-                                   builder: (context){
-                                     return AlertDialog(
-                                       title: const Text("Product"),
-                                       content: Row(
-                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                         children: [
-                                           ElevatedButton(
-                                             onPressed: ()async{
-                                               await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
-                                                 if (docSnapshot.exists) {
-                                                   List items = docSnapshot.data()!["items"];
-                                                   items[i]["orderType"] = "Reject";
-                                                   FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
-                                                 }
-                                               });
-                                               FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
-                                                 if (docSnapshot.exists) {
-                                                   List items = docSnapshot.data()!["items"];
-                                                   items[i]["orderType"] = "Reject";
-                                                   FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
-                                                 }
-                                               });
-                                             },
-                                             child: const Text("Reject"),
-                                           ),
-                                           ElevatedButton(
-                                             onPressed: ()async{
-                                               await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
-                                                 if (docSnapshot.exists) {
-                                                   List items = docSnapshot.data()!["items"];
-                                                   items[i]["orderType"] = "Accept";
-                                                   FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
-                                                 }
-                                               });
-
-                                               FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).get().then((docSnapshot) {
-                                                 if (docSnapshot.exists) {
-                                                   List items = docSnapshot.data()!["items"];
-                                                   items[i]["orderType"] = "Accept";
-                                                   FirebaseFirestore.instance.collection("users").doc(snapshot.data!.docs[index]["userId"]).collection("orders").doc(snapshot.data!.docs[index].id).update({"items": items});
-                                                 }
-                                               });
-                                             },
-                                             child: const Text("Accept"),
-                                           ),
-                                         ],
-                                       ),
-                                     );
-                                   },
-                                 );
-                                },
-                                child: Text(snapshot.data!.docs[index]["items"][i]["orderType"]),
-                              ),
-                            );
-                          },
+                                                  FirebaseFirestore.instance
+                                                      .collection("users")
+                                                      .doc(snapshot
+                                                              .data!.docs[index]
+                                                          ["userId"])
+                                                      .collection("orders")
+                                                      .doc(snapshot
+                                                          .data!.docs[index].id)
+                                                      .get()
+                                                      .then((docSnapshot) {
+                                                    if (docSnapshot.exists) {
+                                                      List items = docSnapshot
+                                                          .data()!["items"];
+                                                      items[i]["orderType"] =
+                                                          "Accept";
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .doc(snapshot.data!
+                                                                  .docs[index]
+                                                              ["userId"])
+                                                          .collection("orders")
+                                                          .doc(snapshot.data!
+                                                              .docs[index].id)
+                                                          .update(
+                                                              {"items": items});
+                                                    }
+                                                  });
+                                                },
+                                                child: const Text("Accept"),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text(snapshot.data!.docs[index]
+                                      ["items"][i]["orderType"]),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          }else{
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      )
-    );
+                      ],
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ));
   }
 }

@@ -5,7 +5,7 @@ import 'package:groceryease_delivery_application/pages/super_admin/all_order_scr
 import 'all_product_screen.dart';
 
 class AdminDetailScreen extends StatelessWidget {
-  const AdminDetailScreen({required this.adminID,super.key});
+  const AdminDetailScreen({required this.adminID, super.key});
   final String adminID;
   @override
   Widget build(BuildContext context) {
@@ -19,8 +19,13 @@ class AdminDetailScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(CupertinoIcons.cube_box),
               title: const Text("All Products"),
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AllProductsDetail(adminId: adminID,)));
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AllProductsDetail(
+                              adminId: adminID,
+                            )));
               },
             ),
           ),
@@ -28,8 +33,13 @@ class AdminDetailScreen extends StatelessWidget {
             child: ListTile(
               leading: Icon(CupertinoIcons.shopping_cart),
               title: Text("All Orders"),
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AllOrderScreen(adminId: adminID,)));
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AllOrderScreen(
+                              adminId: adminID,
+                            )));
               },
             ),
           ),

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../services/database_services.dart';
 
 class MyProducts extends StatefulWidget {
   const MyProducts({super.key});
@@ -42,18 +41,33 @@ class _MyProductsState extends State<MyProducts> {
                   selectedCategory = value;
                 });
               },
-              items: categories.map((category) => DropdownMenuItem(value: category, child: Text(category),)).toList(),
+              items: categories
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
             ),
             const SizedBox(height: 20.0),
             Expanded(
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("products").where("adminId",isEqualTo: FirebaseAuth.instance.currentUser!.uid).where("type",isEqualTo: selectedCategory).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection("products")
+                    .where("adminId",
+                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                    .where("type", isEqualTo: selectedCategory)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text("No items found",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),));
+                    return Center(
+                        child: Text(
+                      "No items found",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ));
                   }
 
                   var foodItems = snapshot.data!.docs;
@@ -62,20 +76,21 @@ class _MyProductsState extends State<MyProducts> {
                     itemBuilder: (context, index) {
                       final foodItem = foodItems[index];
                       return ListTile(
-                        leading: foodItem['image'] != null ?
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            foodItem['image'],
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                        ) :
-                        const Icon(Icons.fastfood),
+                        leading: foodItem['image'] != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  foodItem['image'],
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const Icon(Icons.fastfood),
                         title: Text(foodItem['name']),
                         subtitle: Text("Rs. " + foodItem['price'].toString()),
-                        trailing: Text("Quantity " + foodItem["quantity"].toString()),
+                        trailing:
+                            Text("Quantity " + foodItem["quantity"].toString()),
                       );
                     },
                   );

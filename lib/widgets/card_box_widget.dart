@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CardBox extends StatelessWidget {
-  CardBox({
+  const CardBox({
     required this.imageUrl,
     required this.title,
     required this.price,
@@ -12,7 +13,8 @@ class CardBox extends StatelessWidget {
     required this.icon,
     required this.onTap,
     required this.onPressed,
-    super.key});
+    super.key,
+  });
 
   final String imageUrl;
   final String title;
@@ -34,76 +36,73 @@ class CardBox extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.grey.shade200,
-              blurRadius: 20,
+              blurRadius: 10,
               spreadRadius: 2,
-              blurStyle: BlurStyle.inner,
-              offset: Offset(0.6,0.6),
+              offset: const Offset(0.6, 0.6),
             ),
           ],
         ),
         child: Column(
           children: [
+            // Image with better constraints
             ClipRRect(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-
-                imageUrl: imageUrl.toString(),
-                progressIndicatorBuilder: (context, url, downloadProgress) => Shimmer.fromColors(
-                  baseColor: Colors.grey[100]!,
-                  highlightColor: Colors.grey[50]!,
+                imageUrl: imageUrl,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    Shimmer.fromColors(
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
                   child: Container(
-                    width: 100.0,
-                    height: 100.0,
+                    width: double.infinity,
+                    height: size.height * 0.2,
                     color: Colors.grey[300],
                   ),
                 ),
-                errorWidget: (context, url, error) => Center(child: Image.asset("assets/images/fruits.png",height: 100,width: 100,)),
-                height: 200,
-                width: 300,
-                fit: BoxFit.fill,
+                errorWidget: (context, url, error) => Center(
+                  child: Image.asset(
+                    "assets/images/fruits.png",
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: size.height * 0.2,
+                  ),
+                ),
+                height: size.height * 0.2, // Responsive height
+                width: double.infinity,
+                fit: BoxFit.cover, // Maintains aspect ratio
               ),
             ),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(title, style: AppWidgets.semiBoldTextFieldStyle()),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       RichText(
                         text: TextSpan(
                           text: 'Rs. ',
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: const TextStyle(
+                            fontSize: 18,
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                           children: <TextSpan>[
                             TextSpan(
-                              text: price,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                                text: price,
+                                style: AppWidgets.boldTextFieldStyle()),
                           ],
                         ),
                       ),
                       IconButton(
                         onPressed: onPressed,
-                        icon: Icon(icon,color: Colors.deepPurple,),
-                      )
+                        icon: Icon(
+                          icon,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
                     ],
                   ),
                 ],

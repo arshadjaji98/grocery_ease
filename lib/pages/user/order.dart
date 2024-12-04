@@ -26,10 +26,15 @@ class _CartState extends State<Cart> {
           children: [
             Expanded(
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("card")
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    double totalAmount = snapshot.data!.docs.fold(0, (sum, doc) {
+                    double totalAmount =
+                        snapshot.data!.docs.fold(0, (sum, doc) {
                       double price = double.parse(doc["price"].toString());
                       int count = int.parse(doc["count"].toString());
                       return sum + (price * count);
@@ -44,7 +49,8 @@ class _CartState extends State<Cart> {
                               return Container(
                                 height: 100,
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -59,23 +65,34 @@ class _CartState extends State<Cart> {
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(item["name"], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                        Text(item["name"],
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
                                         Text("Price: \$${item["price"]}"),
                                       ],
                                     ),
                                     Column(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         IconButton(
                                           onPressed: () {
-                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(item.id).delete();
+                                            FirebaseFirestore.instance
+                                                .collection("users")
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser!.uid)
+                                                .collection("card")
+                                                .doc(item.id)
+                                                .delete();
                                           },
                                           icon: const Icon(
                                             CupertinoIcons.delete,
@@ -90,7 +107,13 @@ class _CartState extends State<Cart> {
                                                 int count = int.parse(
                                                     item["count"].toString());
                                                 if (count > 1) {
-                                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(item.id).update({
+                                                  FirebaseFirestore.instance
+                                                      .collection("users")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                      .collection("card")
+                                                      .doc(item.id)
+                                                      .update({
                                                     "count": count - 1,
                                                   });
                                                 }
@@ -111,7 +134,7 @@ class _CartState extends State<Cart> {
                                                 FirebaseFirestore.instance
                                                     .collection("users")
                                                     .doc(FirebaseAuth.instance
-                                                    .currentUser!.uid)
+                                                        .currentUser!.uid)
                                                     .collection("card")
                                                     .doc(item.id)
                                                     .update({
@@ -188,8 +211,7 @@ class _CartState extends State<Cart> {
                                 ),
                               ),
                               ListTile(
-                                leading:
-                                const Icon(CupertinoIcons.creditcard),
+                                leading: const Icon(CupertinoIcons.creditcard),
                                 title: const Text("Credit Card"),
                                 trailing: Radio<String>(
                                   value: "Credit",
@@ -209,58 +231,96 @@ class _CartState extends State<Cart> {
                                     backgroundColor: Colors.deepPurple,
                                   ),
                                   onPressed: () async {
-                                    var userDoc = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid);
+                                    var userDoc = FirebaseFirestore.instance
+                                        .collection("users")
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser!.uid);
 
-                                    var cartSnapshot = await userDoc.collection("card").get();
+                                    var cartSnapshot =
+                                        await userDoc.collection("card").get();
 
+                                    List<Map<String, dynamic>> items =
+                                        cartSnapshot.docs
+                                            .map((doc) => {
+                                                  "id": doc["id"],
+                                                  "adminId": doc["adminId"],
+                                                  "name": doc["name"],
+                                                  "price": doc["price"],
+                                                  "count": doc["count"],
+                                                  "details": doc["details"],
+                                                  "image": doc["image"],
+                                                  "type": doc["type"],
+                                                  "orderType": "pending",
+                                                })
+                                            .toList();
 
-                                    List<Map<String, dynamic>> items = cartSnapshot.docs.map((doc) => {
-                                      "id": doc["id"],
-                                      "adminId" : doc["adminId"],
-                                      "name": doc["name"],
-                                      "price": doc["price"],
-                                      "count": doc["count"],
-                                      "details": doc["details"],
-                                      "image" : doc["image"],
-                                      "type": doc["type"],
-                                      "orderType" : "pending",
-                                    }).toList();
+                                    final adminIds = items
+                                        .map((item) => item['adminId'])
+                                        .toSet();
 
-                                    final adminIds = items.map((item) => item['adminId']).toSet();
+                                    var orderId =
+                                        userDoc.collection("orders").doc();
 
-                                    var orderId = userDoc.collection("orders").doc();
-
-                                    await userDoc.collection("orders").doc(orderId.id).set({
-                                      "orderId" : orderId.id,
+                                    await userDoc
+                                        .collection("orders")
+                                        .doc(orderId.id)
+                                        .set({
+                                      "orderId": orderId.id,
                                       "items": items,
                                       "totalAmount": items.fold(0, (sum, item) {
-                                        return sum + (double.parse(item["price"].toString()) * int.parse(item["count"].toString())).toInt();
+                                        return sum +
+                                            (double.parse(item["price"]
+                                                        .toString()) *
+                                                    int.parse(item["count"]
+                                                        .toString()))
+                                                .toInt();
                                       }),
                                       "paymentMethod": selectPayment,
                                       "timestamp": FieldValue.serverTimestamp(),
                                     });
 
                                     for (var adminId in adminIds) {
-                                      final itemsForAdmin = items.where((item) => item['adminId'] == adminId).toList();
+                                      final itemsForAdmin = items
+                                          .where((item) =>
+                                              item['adminId'] == adminId)
+                                          .toList();
 
-                                      final totalAmount = itemsForAdmin.fold(0, (sum, item) {
-                                        return sum + (double.parse(item["price"].toString()) * int.parse(item["count"].toString())).toInt();
+                                      final totalAmount =
+                                          itemsForAdmin.fold(0, (sum, item) {
+                                        return sum +
+                                            (double.parse(item["price"]
+                                                        .toString()) *
+                                                    int.parse(item["count"]
+                                                        .toString()))
+                                                .toInt();
                                       });
 
                                       // Add order data to Firestore
-                                      await FirebaseFirestore.instance.collection("users").doc(adminId).collection("orders").doc(orderId.id).set({
+                                      await FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(adminId)
+                                          .collection("orders")
+                                          .doc(orderId.id)
+                                          .set({
                                         "items": itemsForAdmin,
                                         "totalAmount": totalAmount,
                                         "paymentMethod": selectPayment,
-                                        "timestamp": FieldValue.serverTimestamp(),
-                                        "userId" : FirebaseAuth.instance.currentUser!.uid,
+                                        "timestamp":
+                                            FieldValue.serverTimestamp(),
+                                        "userId": FirebaseAuth
+                                            .instance.currentUser!.uid,
                                       });
                                     }
 
-                                    final collectionRef = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card");
+                                    final collectionRef = FirebaseFirestore
+                                        .instance
+                                        .collection("users")
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser!.uid)
+                                        .collection("card");
 
-                                    final querySnapshot = await collectionRef.get();
-
+                                    final querySnapshot =
+                                        await collectionRef.get();
 
                                     for (var doc in querySnapshot.docs) {
                                       await doc.reference.delete();

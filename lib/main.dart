@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
           cardTheme: CardTheme(
             color: Colors.white,
           ),
-
         ),
         home: const SplashScreen());
   }

@@ -7,30 +7,28 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
-  final String image, name, details, price, id,adminId,stock,type;
+  final String image, name, details, price, id, adminId, stock, type;
   final List favourite;
 
-  const Details(
-      {super.key,
-      required this.image,
-      required this.name,
-      required this.details,
-      required this.price,
-      required this.stock,
-      required this.id,
-      required this.adminId,
-      required this.type,
-      required this.favourite,
-      });
+  const Details({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.details,
+    required this.price,
+    required this.stock,
+    required this.id,
+    required this.adminId,
+    required this.type,
+    required this.favourite,
+  });
 
   @override
   State<Details> createState() => _DetailsState();
 }
 
 class _DetailsState extends State<Details> {
-
   int count = 1;
-
 
   @override
   void initState() {
@@ -114,10 +112,8 @@ class _DetailsState extends State<Details> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: IconButton(
-                                    onPressed: () {
-                                    },
-                                    icon: Icon(
-                                       Icons.favorite,
+                                    onPressed: () {},
+                                    icon: Icon(Icons.favorite,
                                         color: Colors.white),
                                   ),
                                 ),
@@ -149,31 +145,29 @@ class _DetailsState extends State<Details> {
                         GestureDetector(
                           onTap: () {
                             count--;
-                            setState(() {
-
-                            });
+                            setState(() {});
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: const Icon(Icons.remove, color: Colors.white),
+                            child:
+                                const Icon(Icons.remove, color: Colors.white),
                           ),
                         ),
                         const SizedBox(width: 20),
-                        Text(count.toString(),
+                        Text(
+                          count.toString(),
                           style: AppWidgets.boldTextFieldStyle(),
                         ),
                         const SizedBox(width: 20),
                         GestureDetector(
                           onTap: () {
-                            if(int.parse(widget.stock) >= count){
+                            if (int.parse(widget.stock) >= count) {
                               count++;
-                              setState(() {
-
-                              });
-                            }else{
+                              setState(() {});
+                            } else {
                               print("Your Stock is $count");
                             }
                           },
@@ -196,9 +190,11 @@ class _DetailsState extends State<Details> {
                       children: [
                         Row(
                           children: [
-                            Text("Delivery Time", style: AppWidgets.semiBoldTextFieldStyle()),
+                            Text("Delivery Time",
+                                style: AppWidgets.semiBoldTextFieldStyle()),
                             const SizedBox(width: 25),
-                            Text("30 min", style: AppWidgets.semiBoldTextFieldStyle()),
+                            Text("30 min",
+                                style: AppWidgets.semiBoldTextFieldStyle()),
                             const SizedBox(width: 5),
                             const Icon(Icons.alarm, color: Colors.black54),
                           ],
@@ -206,24 +202,53 @@ class _DetailsState extends State<Details> {
                         Column(
                           children: [
                             IconButton(
-                              onPressed: (){
-                                if(widget.favourite.contains(FirebaseAuth.instance.currentUser!.uid)){
-                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
-                                    "favourite": FieldValue.arrayRemove([widget.id]),
+                              onPressed: () {
+                                if (widget.favourite.contains(
+                                    FirebaseAuth.instance.currentUser!.uid)) {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .update({
+                                    "favourite":
+                                        FieldValue.arrayRemove([widget.id]),
                                   });
-                                  FirebaseFirestore.instance.collection("products").doc(widget.id).update({
-                                    "favourite" : FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid.toString()]),
+                                  FirebaseFirestore.instance
+                                      .collection("products")
+                                      .doc(widget.id)
+                                      .update({
+                                    "favourite": FieldValue.arrayRemove([
+                                      FirebaseAuth.instance.currentUser!.uid
+                                          .toString()
+                                    ]),
                                   });
-                                }else{
-                                  FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
-                                    "favourite": FieldValue.arrayUnion([widget.id]),
+                                } else {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .update({
+                                    "favourite":
+                                        FieldValue.arrayUnion([widget.id]),
                                   });
-                                  FirebaseFirestore.instance.collection("products").doc(widget.id).update({
-                                    "favourite" : FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid.toString()]),
+                                  FirebaseFirestore.instance
+                                      .collection("products")
+                                      .doc(widget.id)
+                                      .update({
+                                    "favourite": FieldValue.arrayUnion([
+                                      FirebaseAuth.instance.currentUser!.uid
+                                          .toString()
+                                    ]),
                                   });
                                 }
-                                },
-                              icon: Icon(widget.favourite.contains(FirebaseAuth.instance.currentUser!.uid) ? CupertinoIcons.heart_fill : CupertinoIcons.heart,color: Colors.deepPurple,),
+                              },
+                              icon: Icon(
+                                widget.favourite.contains(
+                                        FirebaseAuth.instance.currentUser!.uid)
+                                    ? CupertinoIcons.heart_fill
+                                    : CupertinoIcons.heart,
+                                color: Colors.deepPurple,
+                              ),
                             ),
                             Text(widget.favourite.length.toString()),
                           ],
@@ -263,11 +288,16 @@ class _DetailsState extends State<Details> {
                           ),
                           const SizedBox(height: 10),
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection("products").where("type",isEqualTo: widget.type).snapshots(),
+                            stream: FirebaseFirestore.instance
+                                .collection("products")
+                                .where("type", isEqualTo: widget.type)
+                                .snapshots(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return Center(
-                                  child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0),
+                                  child: SpinKitWave(
+                                      color: Color(0XFF8a4af3), size: 30.0),
                                 );
                               }
                               if (snapshot.hasError) {
@@ -278,7 +308,8 @@ class _DetailsState extends State<Details> {
                                   ),
                                 );
                               }
-                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
                                 return Center(
                                   child: Text(
                                     "No similar products found.",
@@ -331,7 +362,8 @@ class _DetailsState extends State<Details> {
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
                                                 product['name'],
-                                                style: AppWidgets.semiBoldTextFieldStyle(),
+                                                style: AppWidgets
+                                                    .semiBoldTextFieldStyle(),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -341,7 +373,8 @@ class _DetailsState extends State<Details> {
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
                                                 "\$${product['price']}",
-                                                style: AppWidgets.lightTextFieldStyle(),
+                                                style: AppWidgets
+                                                    .lightTextFieldStyle(),
                                               ),
                                             ),
                                           ],
@@ -361,7 +394,12 @@ class _DetailsState extends State<Details> {
                     padding: const EdgeInsets.all(10),
                     child: GestureDetector(
                       onTap: () {
-                        FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("card").doc(widget.id).set({
+                        FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection("card")
+                            .doc(widget.id)
+                            .set({
                           "image": widget.image,
                           "name": widget.name,
                           "details": widget.details,
@@ -370,33 +408,40 @@ class _DetailsState extends State<Details> {
                           "price": widget.price,
                           "type": widget.type,
                           "count": count,
-                        }).then((value){
+                        }).then((value) {
                           Navigator.pop(context);
                           count == 1;
                         });
                       },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          bottom: 10,
-                          right: 5,
-                          left: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0XFF8a4af3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Add To Card",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Poppins',
-                              fontSize: 20,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(widget.price,
+                              style: AppWidgets.boldTextFieldStyle()),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            padding: const EdgeInsets.only(
+                              top: 10,
+                              bottom: 10,
+                              right: 5,
+                              left: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0XFF8a4af3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Add To Card",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   )
@@ -406,15 +451,21 @@ class _DetailsState extends State<Details> {
   }
 }
 
-class CardModel{
+class CardModel {
   List<ProductModel> productModel;
   CardModel({required this.productModel});
 }
 
-
-class ProductModel{
-  final String image,name,description,type,adminId,id;
-  final int price,stock;
-  ProductModel({
-    required this.image,required this.name,required this.description,required this.type,required this.id,required this.adminId,required this.stock,required this.price});
+class ProductModel {
+  final String image, name, description, type, adminId, id;
+  final int price, stock;
+  ProductModel(
+      {required this.image,
+      required this.name,
+      required this.description,
+      required this.type,
+      required this.id,
+      required this.adminId,
+      required this.stock,
+      required this.price});
 }

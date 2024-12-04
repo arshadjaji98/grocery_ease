@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/pages/super_admin/all_admin_screen.dart';
 import 'package:groceryease_delivery_application/pages/super_admin/all_users_screen.dart';
 
@@ -21,9 +22,10 @@ class _SuperAdminHomeScreenState extends State<SuperAdminHomeScreen> {
           title: const Text('TabBar Example'),
           actions: [
             IconButton(
-              onPressed: ()async{
+              onPressed: () async {
                 await FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => LogIn()));
               },
               icon: Icon(Icons.logout),
             )

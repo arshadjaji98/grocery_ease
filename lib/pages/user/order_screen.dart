@@ -18,20 +18,41 @@ class _OrderScreenState extends State<OrderScreen> {
         title: Text("Order"),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).collection("orders").snapshots(),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("orders")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context,index){
-                DateTime dateTime = (snapshot.data!.docs[index]["timestamp"] as Timestamp).toDate();
+              itemBuilder: (context, index) {
+                DateTime dateTime =
+                    (snapshot.data!.docs[index]["timestamp"] as Timestamp)
+                        .toDate();
                 var orderDate = DateFormat('dd-MM-yyyy').format(dateTime);
                 return Card(
                   child: ExpansionTile(
                     leading: Text("${index + 1}"),
-                    title: Text(orderDate,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 12,color: Colors.grey)),
-                    subtitle: Text(snapshot.data!.docs[index]["paymentMethod"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
-                    trailing: Text("Rs. " + snapshot.data!.docs[index]["totalAmount"].toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
+                    title: Text(orderDate,
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 12,
+                            color: Colors.grey)),
+                    subtitle: Text(snapshot.data!.docs[index]["paymentMethod"],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black)),
+                    trailing: Text(
+                        "Rs. " +
+                            snapshot.data!.docs[index]["totalAmount"]
+                                .toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black)),
                     children: [
                       SizedBox(
                         height: 200,
@@ -40,14 +61,26 @@ class _OrderScreenState extends State<OrderScreen> {
                           itemBuilder: (context, i) {
                             return ListTile(
                               leading: Text("${i + 1}"),
-                              title: Text(snapshot.data!.docs[index]["items"][i]["name"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black)),
-                              subtitle: Text(snapshot.data!.docs[index]["items"][i]["orderType"]),
+                              title: Text(
+                                  snapshot.data!.docs[index]["items"][i]
+                                      ["name"],
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black)),
+                              subtitle: Text(snapshot.data!.docs[index]["items"]
+                                  [i]["orderType"]),
                               trailing: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text("Rs. " + snapshot.data!.docs[index]["items"][i]["price"]),
-                                  Text("Qty. " + snapshot.data!.docs[index]["items"][i]["count"].toString()),
+                                  Text("Rs. " +
+                                      snapshot.data!.docs[index]["items"][i]
+                                          ["price"]),
+                                  Text("Qty. " +
+                                      snapshot.data!
+                                          .docs[index]["items"][i]["count"]
+                                          .toString()),
                                 ],
                               ),
                             );
@@ -59,7 +92,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 );
               },
             );
-          }else{
+          } else {
             return Center(child: CircularProgressIndicator());
           }
         },

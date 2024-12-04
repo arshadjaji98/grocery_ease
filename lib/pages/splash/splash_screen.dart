@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/services/splash_service.dart';
 
@@ -19,12 +17,17 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     splashService.isSplash(context);
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(child: Text("Splash Screen",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),)),
+          Center(
+              child: Text(
+            "Splash Screen",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          )),
         ],
       ),
     );

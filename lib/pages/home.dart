@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/pages/user/details.dart';
 import 'package:groceryease_delivery_application/pages/user/favorite.dart';
-
-import 'package:groceryease_delivery_application/services/database_services.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -20,7 +18,7 @@ class _HomeState extends State<Home> {
   @override
   TextEditingController searchController = TextEditingController();
 
-  List<String> types = ["Fruit","Meat","Backery","Beverages","Oil"];
+  List<String> types = ["Fruit", "Meat", "Backery", "Beverages", "Oil"];
   String? selectType;
   List<String> typeImage = [
     "assets/images/fruits.png",
@@ -31,8 +29,6 @@ class _HomeState extends State<Home> {
   ];
 
   String searchTerm = '';
-
-
 
   @override
   void initState() {
@@ -120,32 +116,41 @@ class _HomeState extends State<Home> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: typeImage.length,
-                  itemBuilder: (context,index){
-                    return  GestureDetector(
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
                       onTap: () {
                         selectType = types[index];
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(5),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: selectType == types[index] ? Colors.deepPurple : Colors.white,
+                            color: selectType == types[index]
+                                ? Colors.deepPurple
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: selectType == types[index] ? Colors.white : Colors.black,
+                            border: Border.all(
+                              color: selectType == types[index]
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                           child: Row(
                             children: [
-                              Image.asset(typeImage[index], height: 20, width: 20),
+                              Image.asset(typeImage[index],
+                                  height: 20, width: 20),
                               SizedBox(width: 5),
                               Text(
                                 types[index],
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontFamily: 'Poppins',color: selectType == types[index] ? Colors.white : Colors.black,),
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: selectType == types[index]
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
                             ],
                           ),
@@ -160,14 +165,20 @@ class _HomeState extends State<Home> {
               Container(
                 height: 200,
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection("products").snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection("products")
+                      .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
-                          child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
+                          child: SpinKitWave(
+                              color: Color(0XFF8a4af3), size: 30.0));
                     }
                     if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                      return const Center(child: Text("No items available",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)));
+                      return const Center(
+                          child: Text("No items available",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)));
                     }
 
                     return ListView.builder(
@@ -205,10 +216,12 @@ class _HomeState extends State<Home> {
                                 elevation: 5,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 12),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(20),
@@ -220,20 +233,23 @@ class _HomeState extends State<Home> {
                                           placeholder: (context, url) =>
                                               LinearProgressIndicator(),
                                           errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
+                                              const Icon(Icons.error),
                                         ),
                                       ),
                                       const SizedBox(height: 6),
                                       Text(ds["name"],
-                                          style: AppWidgets.semiBoldTextFieldStyle(),
+                                          style: AppWidgets
+                                              .semiBoldTextFieldStyle(),
                                           textAlign: TextAlign.center),
                                       const SizedBox(height: 4),
                                       Text("Fresh and Healthy",
-                                          style: AppWidgets.lightTextFieldStyle(),
+                                          style:
+                                              AppWidgets.lightTextFieldStyle(),
                                           textAlign: TextAlign.center),
                                       const SizedBox(height: 4),
                                       Text("\$${ds["price"]}",
-                                          style: AppWidgets.semiBoldTextFieldStyle(),
+                                          style: AppWidgets
+                                              .semiBoldTextFieldStyle(),
                                           textAlign: TextAlign.center),
                                     ],
                                   ),
@@ -249,13 +265,21 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 30),
               StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("products").where("type",isEqualTo: selectType).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection("products")
+                    .where("type", isEqualTo: selectType)
+                    .snapshots(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
+                    return Center(
+                        child:
+                            SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
                   }
                   if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                    return const Center(child: Text("No items available",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)));
+                    return const Center(
+                        child: Text("No items available",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)));
                   }
 
                   return ListView.builder(
@@ -271,16 +295,16 @@ class _HomeState extends State<Home> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Details(
-                                  image: ds['image'],
-                                  name: ds['name'],
-                                  details: ds['detail'],
-                                  price: ds['price'].toString(),
-                                  id: ds['id'],
-                                  stock: ds['quantity'].toString(),
-                                  adminId: ds['adminId'],
-                                  type: ds['type'],
-                                  favourite: ds["favourite"],
-                                )),
+                                      image: ds['image'],
+                                      name: ds['name'],
+                                      details: ds['detail'],
+                                      price: ds['price'].toString(),
+                                      id: ds['id'],
+                                      stock: ds['quantity'].toString(),
+                                      adminId: ds['adminId'],
+                                      type: ds['type'],
+                                      favourite: ds["favourite"],
+                                    )),
                           );
                         },
                         child: Container(
@@ -304,21 +328,25 @@ class _HomeState extends State<Home> {
                                       placeholder: (context, url) =>
                                           LinearProgressIndicator(),
                                       errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                                          const Icon(Icons.error),
                                     ),
                                   ),
                                   const SizedBox(width: 20),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(ds["name"],
-                                          style: AppWidgets.semiBoldTextFieldStyle()),
+                                          style: AppWidgets
+                                              .semiBoldTextFieldStyle()),
                                       const SizedBox(height: 5),
                                       Text("Fresh and Healthy",
-                                          style: AppWidgets.lightTextFieldStyle()),
+                                          style:
+                                              AppWidgets.lightTextFieldStyle()),
                                       const SizedBox(height: 5),
                                       Text("\$${ds["price"]}",
-                                          style: AppWidgets.semiBoldTextFieldStyle()),
+                                          style: AppWidgets
+                                              .semiBoldTextFieldStyle()),
                                     ],
                                   ),
                                 ],

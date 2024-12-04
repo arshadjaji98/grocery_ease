@@ -39,11 +39,12 @@ class _SignUpState extends State<SignUp> {
       _isLoading = true;
     });
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
-      ).
-      then((value){
+      )
+          .then((value) {
         Map<String, dynamic> addUserInfo = {
           "name": nameController.text.trim(),
           "email": value.user!.email.toString(),
@@ -51,20 +52,25 @@ class _SignUpState extends State<SignUp> {
           "phone": phoneController.text,
           "address": addressController.text,
           "id": value.user!.uid,
-          "favourite" : [],
-          "profile_image" : "",
-          "user_role" : selectType,
-          "date" : DateTime.now(),
-          "verify" : selectType == "admin" ? false : true,
+          "favourite": [],
+          "profile_image": "",
+          "user_role": selectType,
+          "date": DateTime.now(),
+          "verify": selectType == "admin" ? false : true,
         };
-        FirebaseFirestore.instance.collection("users").doc(value.user!.uid).set(addUserInfo);
-        if(selectType == "admin"){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeAdmin()));
-        }else{
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const BottomNav()));
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(value.user!.uid)
+            .set(addUserInfo);
+        if (selectType == "admin") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const HomeAdmin()));
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const BottomNav()));
         }
         Utils.toastMessage("Registered Successfully");
-      }).onError((e,s){
+      }).onError((e, s) {
         Utils.toastMessage(e.toString());
       });
     } on FirebaseAuthException catch (e) {
@@ -92,12 +98,16 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+              margin:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40),),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
               ),
             ),
             Center(
@@ -119,7 +129,8 @@ class _SignUpState extends State<SignUp> {
                                 elevation: 5.0,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 20.0, right: 20.0),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -128,34 +139,41 @@ class _SignUpState extends State<SignUp> {
                                   child: Form(
                                     key: _formkey,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         const SizedBox(height: 20.0),
                                         Text(
                                           "Sign up",
-                                          style: AppWidgets.headerTextFieldStyle(),
+                                          style:
+                                              AppWidgets.headerTextFieldStyle(),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
                                           controller: nameController,
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Please Enter Name';
                                             }
                                             return null;
                                           },
                                           decoration: InputDecoration(
                                             hintText: 'Name',
-                                            hintStyle: AppWidgets.semiBoldTextFieldStyle(),
-                                            prefixIcon: const Icon(Icons.person_outlined),
+                                            hintStyle: AppWidgets
+                                                .semiBoldTextFieldStyle(),
+                                            prefixIcon: const Icon(
+                                                Icons.person_outlined),
                                           ),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
                                           controller: addressController,
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Please Enter Address';
                                             }
                                             return null;
@@ -165,7 +183,7 @@ class _SignUpState extends State<SignUp> {
                                               hintStyle: AppWidgets
                                                   .semiBoldTextFieldStyle(),
                                               prefixIcon:
-                                              Icon(Icons.location_on)),
+                                                  Icon(Icons.location_on)),
                                         ),
                                         const SizedBox(height: 30.0),
                                         TextFormField(
@@ -228,11 +246,9 @@ class _SignUpState extends State<SignUp> {
                                                 title: Text("User"),
                                                 value: "user",
                                                 groupValue: selectType,
-                                                onChanged: (value){
+                                                onChanged: (value) {
                                                   selectType = value;
-                                                  setState(() {
-
-                                                  });
+                                                  setState(() {});
                                                 },
                                               ),
                                             ),
@@ -241,11 +257,9 @@ class _SignUpState extends State<SignUp> {
                                                 title: Text("Admin"),
                                                 value: "admin",
                                                 groupValue: selectType,
-                                                onChanged: (value){
+                                                onChanged: (value) {
                                                   selectType = value;
-                                                  setState(() {
-
-                                                  });
+                                                  setState(() {});
                                                 },
                                               ),
                                             ),
@@ -254,51 +268,59 @@ class _SignUpState extends State<SignUp> {
                                         const SizedBox(height: 20.0),
                                         GestureDetector(
                                           onTap: () async {
-                                            if (_formkey.currentState!.validate()) {
+                                            if (_formkey.currentState!
+                                                .validate()) {
                                               setState(() {});
                                               await registration();
                                             }
                                           },
                                           child: Material(
                                             elevation: 5.0,
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8.0),
                                               width: 200,
                                               decoration: BoxDecoration(
                                                 color: const Color(0XFF8a4af3),
-                                                borderRadius: BorderRadius.circular(20),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
                                               ),
-                                              child: _isLoading ?
-                                              const Center(child: SpinKitWave(size: 20, color: Colors.white)) :
-                                              const Center(
-                                                child: Text(
-                                                  "SIGN IN",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18.0,
-                                                    fontFamily:
-                                                    'Poppins1',
-                                                    fontWeight:
-                                                    FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
+                                              child: _isLoading
+                                                  ? const Center(
+                                                      child: SpinKitWave(
+                                                          size: 20,
+                                                          color: Colors.white))
+                                                  : const Center(
+                                                      child: Text(
+                                                        "SIGN IN",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 18.0,
+                                                          fontFamily:
+                                                              'Poppins1',
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
                                             ),
                                           ),
                                         ),
                                         const SizedBox(height: 10.0),
                                         Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                              MainAxisAlignment.center,
                                           children: [
                                             const Text(
-                                              "Don't have an account? ",
+                                              "Already have an account? ",
                                               style: TextStyle(
                                                   fontFamily: 'Poppins',
                                                   fontSize: 14,
                                                   decoration:
-                                                  TextDecoration.underline,
+                                                      TextDecoration.underline,
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             TextButton(
@@ -307,17 +329,17 @@ class _SignUpState extends State<SignUp> {
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                          const LogIn()));
+                                                              const LogIn()));
                                                 },
                                                 child: const Text("Login",
                                                     style: TextStyle(
                                                         fontFamily: 'Poppins',
                                                         fontSize: 18,
                                                         decoration:
-                                                        TextDecoration
-                                                            .underline,
+                                                            TextDecoration
+                                                                .underline,
                                                         fontWeight:
-                                                        FontWeight.bold))),
+                                                            FontWeight.bold))),
                                           ],
                                         ),
                                         const SizedBox(height: 10.0),

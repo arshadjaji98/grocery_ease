@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:groceryease_delivery_application/pages/super_admin/admin_detail_screen.dart';
@@ -13,41 +11,56 @@ class AllAdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection("users").snapshots(),
-      builder: (context,snapshot){
-        if(snapshot.hasData){
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context,index){
+            itemBuilder: (context, index) {
               var data = snapshot.data!.docs[index];
-              if(data["user_role"] == "admin"){
+              if (data["user_role"] == "admin") {
                 return Card(
                   child: ListTile(
                     leading: Text("${index + 1}"),
                     title: Text(data["name"]),
-                    trailing: data["verify"] ?
-                    const Text("Verify",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),) :
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                      ),
-                      onPressed: (){
-                        FirebaseFirestore.instance.collection("users").doc(data["id"]).update({
-                          "verify" : true,
-                        });
-                      },
-                      child: Text("Not Verify",style: TextStyle(color: Colors.white),),
-                    ),
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AdminDetailScreen(adminID: snapshot.data!.docs[index]["id"],)));
+                    trailing: data["verify"]
+                        ? const Text(
+                            "Verify",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                            ),
+                            onPressed: () {
+                              FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(data["id"])
+                                  .update({
+                                "verify": true,
+                              });
+                            },
+                            child: Text(
+                              "Not Verify",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminDetailScreen(
+                                    adminID: snapshot.data!.docs[index]["id"],
+                                  )));
                     },
                   ),
                 );
-              }else{
+              } else {
                 return const SizedBox();
               }
             },
           );
-        }else{
+        } else {
           return Center(child: CircularProgressIndicator());
         }
       },

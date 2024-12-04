@@ -3,17 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/services/database_services.dart';
-import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 
-import '../admin/my_product.dart';
-
 class Profile extends StatefulWidget {
-  const Profile({this.userRole,this.userId,super.key});
+  const Profile({this.userRole, this.userId, super.key});
   final String? userId;
   final String? userRole;
 
@@ -39,13 +35,17 @@ class _ProfileState extends State<Profile> {
   uploadItem() async {
     if (selectedImage != null) {
       String addId = randomAlphaNumeric(10);
-      Reference firebaseStorageRef = FirebaseStorage.instance.ref().child("blogImages").child(addId);
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child("blogImages").child(addId);
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
       var downloadUrl = await (await task).ref.getDownloadURL();
 
-      FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
-        "profile_image" : downloadUrl,
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        "profile_image": downloadUrl,
       });
 
       setState(() {});
@@ -56,14 +56,19 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users").doc(widget.userId ?? FirebaseAuth.instance.currentUser?.uid).snapshots(),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            Map<String,dynamic> data = snapshot.data!.data() as Map<String,dynamic>;
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(widget.userId ?? FirebaseAuth.instance.currentUser?.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
               child: SingleChildScrollView(
@@ -72,7 +77,8 @@ class _ProfileState extends State<Profile> {
                     Stack(
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
+                          padding: const EdgeInsets.only(
+                              top: 45.0, left: 20.0, right: 20.0),
                           height: MediaQuery.of(context).size.height / 4.3,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
@@ -91,31 +97,31 @@ class _ProfileState extends State<Profile> {
                               borderRadius: BorderRadius.circular(60),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(60),
-                                child: selectedImage == null ?
-                                GestureDetector(
-                                  onTap: () {
-                                    getImage();
-                                  },
-                                  child: data["profile_image"] == null ?
-                                  Image.asset(
-                                    "assets/images/boy.png",
-                                    height: 120,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ) :
-                                  Image.network(
-                                    data["profile_image"],
-                                    height: 120,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ) :
-                                Image.file(
-                                  selectedImage!,
-                                  height: 120,
-                                  width: 120,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: selectedImage == null
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          getImage();
+                                        },
+                                        child: data["profile_image"] == null
+                                            ? Image.asset(
+                                                "assets/images/boy.png",
+                                                height: 120,
+                                                width: 120,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.network(
+                                                data["profile_image"],
+                                                height: 120,
+                                                width: 120,
+                                                fit: BoxFit.cover,
+                                              ),
+                                      )
+                                    : Image.file(
+                                        selectedImage!,
+                                        height: 120,
+                                        width: 120,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
                           ),
@@ -155,7 +161,8 @@ class _ProfileState extends State<Profile> {
                                           actions: [
                                             TextButton(
                                               onPressed: () {
-                                                Navigator.of(context).pop(false); // Cancel logout
+                                                Navigator.of(context).pop(
+                                                    false); // Cancel logout
                                               },
                                               child: const Text("No"),
                                             ),
@@ -178,7 +185,7 @@ class _ProfileState extends State<Profile> {
                                         MaterialPageRoute(
                                           builder: (context) => const LogIn(),
                                         ),
-                                            (Route<dynamic> route) => false,
+                                        (Route<dynamic> route) => false,
                                       );
                                     }
                                   },
@@ -393,7 +400,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
             );
-          }else{
+          } else {
             return const Center(child: CircularProgressIndicator());
           }
         },

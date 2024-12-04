@@ -72,7 +72,8 @@ class _LogInState extends State<LogIn> {
           } else if (userRole == "superAdmin") {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const SuperAdminHomeScreen()),
+              MaterialPageRoute(
+                  builder: (context) => const SuperAdminHomeScreen()),
             );
           } else {
             Utils.toastMessage("Unknown user role.");
