@@ -92,17 +92,18 @@ class _ProfileState extends State<Profile> {
                           child: Container(
                             margin: EdgeInsets.only(
                                 top: MediaQuery.of(context).size.height / 6.5),
-                            child: Material(
-                              elevation: 10.0,
-                              borderRadius: BorderRadius.circular(60),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(60),
-                                child: selectedImage == null
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          getImage();
-                                        },
-                                        child: data["profile_image"] == null
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Main Profile Picture Container
+                                Material(
+                                  elevation: 10.0,
+                                  borderRadius: BorderRadius.circular(60),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: selectedImage == null
+                                        ? (data["profile_image"] == null ||
+                                                data["profile_image"].isEmpty)
                                             ? Image.asset(
                                                 "assets/images/boy.png",
                                                 height: 120,
@@ -114,15 +115,56 @@ class _ProfileState extends State<Profile> {
                                                 height: 120,
                                                 width: 120,
                                                 fit: BoxFit.cover,
-                                              ),
-                                      )
-                                    : Image.file(
-                                        selectedImage!,
-                                        height: 120,
-                                        width: 120,
-                                        fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Image.asset(
+                                                    "assets/images/boy.png",
+                                                    height: 120,
+                                                    width: 120,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                                },
+                                              )
+                                        : Image.file(
+                                            selectedImage!,
+                                            height: 120,
+                                            width: 120,
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                ),
+
+                                // Upload Button
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      getImage(); // Call your function to upload an image
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors
+                                            .blue, // Adjust the color to your theme
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors
+                                              .white, // Add border for better visibility
+                                          width: 2,
+                                        ),
                                       ),
-                              ),
+                                      child: Icon(
+                                        Icons
+                                            .camera_alt, // Camera icon for upload
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -178,7 +220,6 @@ class _ProfileState extends State<Profile> {
                                       },
                                     );
 
-                                    // If the user confirmed the logout, proceed to sign out
                                     if (confirmLogout == true) {
                                       await DatabaseServices().signOut();
                                       Navigator.of(context).pushAndRemoveUntil(

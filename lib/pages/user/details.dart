@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 
 class Details extends StatefulWidget {
@@ -112,7 +113,50 @@ class _DetailsState extends State<Details> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      if (widget.favourite.contains(FirebaseAuth
+                                          .instance.currentUser!.uid)) {
+                                        FirebaseFirestore.instance
+                                            .collection("users")
+                                            .doc(FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                            .update({
+                                          "favourite": FieldValue.arrayRemove(
+                                              [widget.id]),
+                                        });
+                                        FirebaseFirestore.instance
+                                            .collection("products")
+                                            .doc(widget.id)
+                                            .update({
+                                          "favourite": FieldValue.arrayRemove([
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid
+                                                .toString()
+                                          ]),
+                                        });
+                                      } else {
+                                        FirebaseFirestore.instance
+                                            .collection("users")
+                                            .doc(FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                            .update({
+                                          "favourite": FieldValue.arrayUnion(
+                                              [widget.id]),
+                                        });
+                                        FirebaseFirestore.instance
+                                            .collection("products")
+                                            .doc(widget.id)
+                                            .update({
+                                          "favourite": FieldValue.arrayUnion([
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid
+                                                .toString()
+                                          ]),
+                                        });
+                                      }
+                                      Utils.toastMessage(
+                                          "Item added to favorite");
+                                    },
                                     icon: Icon(Icons.favorite,
                                         color: Colors.white),
                                   ),
@@ -201,55 +245,6 @@ class _DetailsState extends State<Details> {
                         ),
                         Column(
                           children: [
-                            IconButton(
-                              onPressed: () {
-                                if (widget.favourite.contains(
-                                    FirebaseAuth.instance.currentUser!.uid)) {
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(FirebaseAuth
-                                          .instance.currentUser!.uid)
-                                      .update({
-                                    "favourite":
-                                        FieldValue.arrayRemove([widget.id]),
-                                  });
-                                  FirebaseFirestore.instance
-                                      .collection("products")
-                                      .doc(widget.id)
-                                      .update({
-                                    "favourite": FieldValue.arrayRemove([
-                                      FirebaseAuth.instance.currentUser!.uid
-                                          .toString()
-                                    ]),
-                                  });
-                                } else {
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(FirebaseAuth
-                                          .instance.currentUser!.uid)
-                                      .update({
-                                    "favourite":
-                                        FieldValue.arrayUnion([widget.id]),
-                                  });
-                                  FirebaseFirestore.instance
-                                      .collection("products")
-                                      .doc(widget.id)
-                                      .update({
-                                    "favourite": FieldValue.arrayUnion([
-                                      FirebaseAuth.instance.currentUser!.uid
-                                          .toString()
-                                    ]),
-                                  });
-                                }
-                              },
-                              icon: Icon(
-                                widget.favourite.contains(
-                                        FirebaseAuth.instance.currentUser!.uid)
-                                    ? CupertinoIcons.heart_fill
-                                    : CupertinoIcons.heart,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
                             Text(widget.favourite.length.toString()),
                           ],
                         )

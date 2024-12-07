@@ -265,46 +265,46 @@ class _HomeState extends State<Home> {
                                         ],
                                       ),
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      right: 8,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          FirebaseFirestore.instance
-                                              .collection("users")
-                                              .doc(FirebaseAuth
-                                                  .instance.currentUser!.uid)
-                                              .collection("card")
-                                              .doc(ds['id'])
-                                              .set({
-                                            "image": ds["image"],
-                                            "name": ds["name"],
-                                            "details": ds["detail"],
-                                            "id": ds["id"],
-                                            "adminId": ds["adminId"],
-                                            "price": ds["price"],
-                                            "type": ds["type"],
-                                            "count": count,
-                                          }).then((value) {
-                                            Utils.toastMessage(
-                                                "Items added to cart");
-                                          }).catchError((error) {
-                                            Utils.toastMessage(
-                                                "Failed to add item: $error");
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 36,
-                                          width: 36,
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(Icons.add,
-                                              color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
+                                    // Positioned(
+                                    //   bottom: 8,
+                                    //   right: 8,
+                                    //   child: GestureDetector(
+                                    //     onTap: () {
+                                    //       FirebaseFirestore.instance
+                                    //           .collection("users")
+                                    //           .doc(FirebaseAuth
+                                    //               .instance.currentUser!.uid)
+                                    //           .collection("card")
+                                    //           .doc(ds['id'])
+                                    //           .set({
+                                    //         "image": ds["image"],
+                                    //         "name": ds["name"],
+                                    //         "details": ds["detail"],
+                                    //         "id": ds["id"],
+                                    //         "adminId": ds["adminId"],
+                                    //         "price": ds["price"],
+                                    //         "type": ds["type"],
+                                    //         "count": count,
+                                    //       }).then((value) {
+                                    //         Utils.toastMessage(
+                                    //             "Items added to cart");
+                                    //       }).catchError((error) {
+                                    //         Utils.toastMessage(
+                                    //             "Failed to add item: $error");
+                                    //       });
+                                    //     },
+                                    //     child: Container(
+                                    //       height: 36,
+                                    //       width: 36,
+                                    //       decoration: BoxDecoration(
+                                    //         color: Colors.green,
+                                    //         shape: BoxShape.circle,
+                                    //       ),
+                                    //       child: const Icon(Icons.add,
+                                    //           color: Colors.white),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -409,26 +409,26 @@ class _HomeState extends State<Home> {
                                     ],
                                   ),
                                 ),
-                                Positioned(
-                                  right: 10, // Distance from the right
-                                  bottom: 10, // Distance from the bottom
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // Add the product to the cart or perform desired action
-                                      print("Added to cart: ${ds['name']}");
-                                    },
-                                    child: Container(
-                                      height: 36, // Circular button size
-                                      width: 36,
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.add,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                ),
+                                // Positioned(
+                                //   right: 10, // Distance from the right
+                                //   bottom: 10, // Distance from the bottom
+                                //   child: GestureDetector(
+                                //     onTap: () {
+                                //       // Add the product to the cart or perform desired action
+                                //       print("Added to cart: ${ds['name']}");
+                                //     },
+                                //     child: Container(
+                                //       height: 36, // Circular button size
+                                //       width: 36,
+                                //       decoration: BoxDecoration(
+                                //         color: Colors.green,
+                                //         shape: BoxShape.circle,
+                                //       ),
+                                //       child: const Icon(Icons.add,
+                                //           color: Colors.white),
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),

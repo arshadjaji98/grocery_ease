@@ -2,15 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get_common/get_reset.dart';
-import 'package:groceryease_delivery_application/pages/admin/admin_home_screen.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
-import 'package:groceryease_delivery_application/services/database_services.dart';
-import 'package:groceryease_delivery_application/services/shared_perf.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
-import 'package:random_string/random_string.dart';
 
 import '../user/bottom_nav_bar.dart';
 
@@ -30,7 +25,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController addressController = TextEditingController();
-  String? selectType;
+  String selectType = "user"; // Default to "user"
 
   final _formkey = GlobalKey<FormState>();
 
@@ -56,19 +51,16 @@ class _SignUpState extends State<SignUp> {
           "profile_image": "",
           "user_role": selectType,
           "date": DateTime.now(),
-          "verify": selectType == "admin" ? false : true,
+          "verify": true,
         };
         FirebaseFirestore.instance
             .collection("users")
             .doc(value.user!.uid)
             .set(addUserInfo);
-        if (selectType == "admin") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const HomeAdmin()));
-        } else {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const BottomNav()));
-        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNav()),
+        );
         Utils.toastMessage("Registered Successfully");
       }).onError((e, s) {
         Utils.toastMessage(e.toString());
@@ -79,7 +71,7 @@ class _SignUpState extends State<SignUp> {
       Utils.toastMessage(e.toString());
     } finally {
       setState(() {
-        _isLoading = false; // End loading
+        _isLoading = false;
       });
     }
   }
@@ -116,7 +108,7 @@ class _SignUpState extends State<SignUp> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: WebResponsive(
@@ -239,33 +231,6 @@ class _SignUpState extends State<SignUp> {
                                                   Icons.password_outlined)),
                                         ),
                                         const SizedBox(height: 20.0),
-                                        Row(
-                                          children: [
-                                            Flexible(
-                                              child: RadioListTile(
-                                                title: Text("User"),
-                                                value: "user",
-                                                groupValue: selectType,
-                                                onChanged: (value) {
-                                                  selectType = value;
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: RadioListTile(
-                                                title: Text("Admin"),
-                                                value: "admin",
-                                                groupValue: selectType,
-                                                onChanged: (value) {
-                                                  selectType = value;
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20.0),
                                         GestureDetector(
                                           onTap: () async {
                                             if (_formkey.currentState!
@@ -353,9 +318,6 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
-                    // Row(
-                    //   children: [Text("Sign in with google")],
-                    // )
                   ],
                 ),
               ),
