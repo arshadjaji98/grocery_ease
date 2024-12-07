@@ -22,7 +22,15 @@ class _BottomNavState extends State<BottomNav> {
   Widget getPage(int index) {
     switch (index) {
       case 0:
-        return Home();
+        return Home(
+            image: '',
+            name: '',
+            details: '',
+            price: '',
+            id: '',
+            adminId: '',
+            stock: '',
+            type: '');
       case 1:
         return Cart();
       case 2:
@@ -32,7 +40,15 @@ class _BottomNavState extends State<BottomNav> {
       case 4:
         return Profile();
       default:
-        return Home();
+        return Home(
+            image: '',
+            name: '',
+            details: '',
+            price: '',
+            id: '',
+            adminId: '',
+            stock: '',
+            type: '');
     }
   }
 

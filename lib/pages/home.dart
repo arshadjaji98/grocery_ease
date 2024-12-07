@@ -1,14 +1,26 @@
 // ignore_for_file: override_on_non_overriding_member
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/pages/user/details.dart';
 import 'package:groceryease_delivery_application/pages/user/favorite.dart';
+import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final String image, name, details, price, id, adminId, stock, type;
+  const Home(
+      {super.key,
+      required this.image,
+      required this.name,
+      required this.details,
+      required this.price,
+      required this.id,
+      required this.adminId,
+      required this.stock,
+      required this.type});
 
   @override
   State<Home> createState() => _HomeState();
@@ -215,44 +227,85 @@ class _HomeState extends State<Home> {
                                 color: Colors.white,
                                 elevation: 5,
                                 borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 12),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: CachedNetworkImage(
-                                          imageUrl: ds["image"],
-                                          height: 100,
-                                          width: 100,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              LinearProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            child: CachedNetworkImage(
+                                              imageUrl: ds["image"],
+                                              height: 100,
+                                              width: 100,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  LinearProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(ds["name"],
+                                              style: AppWidgets
+                                                  .boldTextFieldStyle(),
+                                              textAlign: TextAlign.center),
+                                          const SizedBox(height: 4),
+                                          Text("Rs. ${ds["price"]}",
+                                              style: AppWidgets
+                                                  .semiBoldTextFieldStyle(),
+                                              textAlign: TextAlign.center),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 8,
+                                      right: 8,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(FirebaseAuth
+                                                  .instance.currentUser!.uid)
+                                              .collection("card")
+                                              .doc(ds['id'])
+                                              .set({
+                                            "image": ds["image"],
+                                            "name": ds["name"],
+                                            "details": ds["detail"],
+                                            "id": ds["id"],
+                                            "adminId": ds["adminId"],
+                                            "price": ds["price"],
+                                            "type": ds["type"],
+                                            "count": count,
+                                          }).then((value) {
+                                            Utils.toastMessage(
+                                                "Items added to cart");
+                                          }).catchError((error) {
+                                            Utils.toastMessage(
+                                                "Failed to add item: $error");
+                                          });
+                                        },
+                                        child: Container(
+                                          height: 36,
+                                          width: 36,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.add,
+                                              color: Colors.white),
                                         ),
                                       ),
-                                      const SizedBox(height: 6),
-                                      Text(ds["name"],
-                                          style: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          textAlign: TextAlign.center),
-                                      const SizedBox(height: 4),
-                                      Text("Fresh and Healthy",
-                                          style:
-                                              AppWidgets.lightTextFieldStyle(),
-                                          textAlign: TextAlign.center),
-                                      const SizedBox(height: 4),
-                                      Text("\$${ds["price"]}",
-                                          style: AppWidgets
-                                              .semiBoldTextFieldStyle(),
-                                          textAlign: TextAlign.center),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -271,7 +324,7 @@ class _HomeState extends State<Home> {
                     .snapshots(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                         child:
                             SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
                   }
@@ -294,17 +347,18 @@ class _HomeState extends State<Home> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Details(
-                                      image: ds['image'],
-                                      name: ds['name'],
-                                      details: ds['detail'],
-                                      price: ds['price'].toString(),
-                                      id: ds['id'],
-                                      stock: ds['quantity'].toString(),
-                                      adminId: ds['adminId'],
-                                      type: ds['type'],
-                                      favourite: ds["favourite"],
-                                    )),
+                              builder: (context) => Details(
+                                image: ds['image'],
+                                name: ds['name'],
+                                details: ds['detail'],
+                                price: ds['price'].toString(),
+                                id: ds['id'],
+                                stock: ds['quantity'].toString(),
+                                adminId: ds['adminId'],
+                                type: ds['type'],
+                                favourite: ds["favourite"],
+                              ),
+                            ),
                           );
                         },
                         child: Container(
@@ -313,44 +367,69 @@ class _HomeState extends State<Home> {
                             elevation: 5,
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: CachedNetworkImage(
-                                      imageUrl: ds["image"],
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          LinearProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Column(
+                            child: Stack(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(ds["name"],
-                                          style: AppWidgets
-                                              .semiBoldTextFieldStyle()),
-                                      const SizedBox(height: 5),
-                                      Text("Fresh and Healthy",
-                                          style:
-                                              AppWidgets.lightTextFieldStyle()),
-                                      const SizedBox(height: 5),
-                                      Text("\$${ds["price"]}",
-                                          style: AppWidgets
-                                              .semiBoldTextFieldStyle()),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: CachedNetworkImage(
+                                          imageUrl: ds["image"],
+                                          height: 80,
+                                          width: 80,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              const LinearProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(ds["name"],
+                                              style: AppWidgets
+                                                  .semiBoldTextFieldStyle()),
+                                          const SizedBox(height: 5),
+                                          Text("Fresh and Healthy",
+                                              style: AppWidgets
+                                                  .lightTextFieldStyle()),
+                                          const SizedBox(height: 5),
+                                          Text("Rs. ${ds["price"]}",
+                                              style: AppWidgets
+                                                  .semiBoldTextFieldStyle()),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                Positioned(
+                                  right: 10, // Distance from the right
+                                  bottom: 10, // Distance from the bottom
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Add the product to the cart or perform desired action
+                                      print("Added to cart: ${ds['name']}");
+                                    },
+                                    child: Container(
+                                      height: 36, // Circular button size
+                                      width: 36,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -358,7 +437,7 @@ class _HomeState extends State<Home> {
                     },
                   );
                 },
-              ),
+              )
             ],
           ),
         ),

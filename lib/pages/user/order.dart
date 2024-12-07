@@ -77,7 +77,7 @@ class _CartState extends State<Cart> {
                                             style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
-                                        Text("Price: \$${item["price"]}"),
+                                        Text("Rs. ${item["price"]}"),
                                       ],
                                     ),
                                     Column(
@@ -163,7 +163,7 @@ class _CartState extends State<Cart> {
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              "\$${totalAmount.toStringAsFixed(2)}",
+                              "Rs. ${totalAmount.toStringAsFixed(2)}",
                               style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),

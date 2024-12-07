@@ -79,7 +79,6 @@ class _LogInState extends State<LogIn> {
             Utils.toastMessage("Unknown user role.");
           }
         } else {
-          // No user document found
           Utils.toastMessage("User record not found.");
           Navigator.pushReplacement(
             context,

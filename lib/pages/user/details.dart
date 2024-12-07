@@ -372,7 +372,7 @@ class _DetailsState extends State<Details> {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
-                                                "\$${product['price']}",
+                                                "Rs. ${product['price']}",
                                                 style: AppWidgets
                                                     .lightTextFieldStyle(),
                                               ),
@@ -416,7 +416,7 @@ class _DetailsState extends State<Details> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Price \$" + widget.price,
+                          Text("Rs. " + widget.price,
                               style: AppWidgets.boldTextFieldStyle()),
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
@@ -432,7 +432,7 @@ class _DetailsState extends State<Details> {
                             ),
                             child: Center(
                               child: Text(
-                                "Add To Card",
+                                "Add To Cart",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Poppins',
