@@ -283,18 +283,8 @@ class _DetailsState extends State<Details> {
                           ),
                           const SizedBox(height: 10),
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection("products")
-                                .where("type", isEqualTo: widget.type)
-                                .snapshots(),
+                            stream: FirebaseFirestore.instance.collection("products").where("type", isEqualTo: widget.type).snapshots(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                  child: SpinKitWave(
-                                      color: Color(0XFF8a4af3), size: 30.0),
-                                );
-                              }
                               if (snapshot.hasError) {
                                 return Center(
                                   child: Text(
@@ -404,8 +394,8 @@ class _DetailsState extends State<Details> {
                           "type": widget.type,
                           "count": count,
                         }).then((value) {
-                          Navigator.pop(context);
                           count == 1;
+                          Utils.toastMessage("This Product Add to Cart");
                         });
                       },
                       child: Row(

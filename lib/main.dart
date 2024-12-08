@@ -34,6 +34,6 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           cardTheme: CardTheme(color: Colors.white),
         ),
-        home: const BottomNav());
+        home: const SplashScreen());
   }
 }
