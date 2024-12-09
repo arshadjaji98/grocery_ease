@@ -10,6 +10,7 @@ import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 class Details extends StatefulWidget {
   final String image, name, details, price, id, adminId, stock, type;
   final List favourite;
+  final int count;
 
   const Details({
     super.key,
@@ -22,6 +23,7 @@ class Details extends StatefulWidget {
     required this.adminId,
     required this.type,
     required this.favourite,
+    required this.count,
   });
 
   @override
@@ -30,6 +32,7 @@ class Details extends StatefulWidget {
 
 class _DetailsState extends State<Details> {
   int count = 1;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -283,7 +286,10 @@ class _DetailsState extends State<Details> {
                           ),
                           const SizedBox(height: 10),
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection("products").where("type", isEqualTo: widget.type).snapshots(),
+                            stream: FirebaseFirestore.instance
+                                .collection("products")
+                                .where("type", isEqualTo: widget.type)
+                                .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasError) {
                                 return Center(
@@ -378,31 +384,47 @@ class _DetailsState extends State<Details> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: GestureDetector(
-                      onTap: () {
-                        FirebaseFirestore.instance
-                            .collection("users")
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .collection("card")
-                            .doc(widget.id)
-                            .set({
-                          "image": widget.image,
-                          "name": widget.name,
-                          "details": widget.details,
-                          "id": widget.id,
-                          "adminId": widget.adminId,
-                          "price": widget.price,
-                          "type": widget.type,
-                          "count": count,
-                        }).then((value) {
-                          count == 1;
-                          Utils.toastMessage("This Product Add to Cart");
+                      onTap: () async {
+                        if (isLoading)
+                          return; // Prevent multiple taps while loading
+
+                        setState(() {
+                          isLoading = true;
                         });
+
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                              .collection("card")
+                              .doc(widget.id)
+                              .set({
+                            "image": widget.image,
+                            "name": widget.name,
+                            "details": widget.details,
+                            "id": widget.id,
+                            "adminId": widget.adminId,
+                            "price": widget.price,
+                            "type": widget.type,
+                            "count": widget.count,
+                          });
+
+                          Utils.toastMessage("Product Added to Cart");
+                        } catch (e) {
+                          Utils.toastMessage("Failed to add product: $e");
+                        } finally {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Rs. " + widget.price,
-                              style: AppWidgets.boldTextFieldStyle()),
+                          Text(
+                            "Rs. ${widget.price}",
+                            style: AppWidgets.boldTextFieldStyle(),
+                          ),
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             padding: const EdgeInsets.only(
@@ -416,14 +438,22 @@ class _DetailsState extends State<Details> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
-                              child: Text(
-                                "Add To Cart",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Poppins',
-                                  fontSize: 20,
-                                ),
-                              ),
+                              child: isLoading
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Center(
+                                        child: SpinKitWave(
+                                            size: 20, color: Colors.white),
+                                      ))
+                                  : Text(
+                                      "Add To Cart",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Poppins',
+                                        fontSize: 20,
+                                      ),
+                                    ),
                             ),
                           ),
                         ],

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
+import 'package:groceryease_delivery_application/pages/splash/splash_screen.dart';
 import 'package:groceryease_delivery_application/responsive/web_responsive.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
@@ -59,7 +60,7 @@ class _SignUpState extends State<SignUp> {
             .set(addUserInfo);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const BottomNav()),
+          MaterialPageRoute(builder: (context) => const SplashScreen()),
         );
         Utils.toastMessage("Registered Successfully");
       }).onError((e, s) {

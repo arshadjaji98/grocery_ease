@@ -215,6 +215,7 @@ class _HomeState extends State<Home> {
                                   adminId: ds['adminId'],
                                   type: ds['type'],
                                   favourite: ds["favourite"],
+                                  count: 1,
                                 ),
                               ),
                             );
@@ -357,6 +358,7 @@ class _HomeState extends State<Home> {
                                 adminId: ds['adminId'],
                                 type: ds['type'],
                                 favourite: ds["favourite"],
+                                count: 1,
                               ),
                             ),
                           );

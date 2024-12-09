@@ -116,7 +116,7 @@ class _OnboardState extends State<Onboard> {
                   currentIndex == contents.length - 1 ? "Start" : "Next",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenHeight * 0.025, // Responsive text size
+                    fontSize: screenHeight * 0.025,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

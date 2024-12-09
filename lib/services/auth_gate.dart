@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:groceryease_delivery_application/pages/user/bottom_nav_bar.dart';
+import 'package:groceryease_delivery_application/pages/splash/splash_screen.dart';
 import 'package:groceryease_delivery_application/pages/registration/onboard.dart';
 
 class AuthGate extends StatelessWidget {
@@ -13,7 +13,7 @@ class AuthGate extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const BottomNav();
+              return const SplashScreen();
             } else {
               return const Onboard();
             }
