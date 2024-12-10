@@ -1,8 +1,10 @@
 // ignore_for_file: override_on_non_overriding_member
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:groceryease_delivery_application/pages/user/details.dart';
 import 'package:groceryease_delivery_application/pages/user/favorite.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
@@ -41,6 +43,7 @@ class _HomeState extends State<Home> {
   ];
 
   String searchTerm = '';
+
 
   @override
   void initState() {
@@ -265,46 +268,6 @@ class _HomeState extends State<Home> {
                                         ],
                                       ),
                                     ),
-                                    // Positioned(
-                                    //   bottom: 8,
-                                    //   right: 8,
-                                    //   child: GestureDetector(
-                                    //     onTap: () {
-                                    //       FirebaseFirestore.instance
-                                    //           .collection("users")
-                                    //           .doc(FirebaseAuth
-                                    //               .instance.currentUser!.uid)
-                                    //           .collection("card")
-                                    //           .doc(ds['id'])
-                                    //           .set({
-                                    //         "image": ds["image"],
-                                    //         "name": ds["name"],
-                                    //         "details": ds["detail"],
-                                    //         "id": ds["id"],
-                                    //         "adminId": ds["adminId"],
-                                    //         "price": ds["price"],
-                                    //         "type": ds["type"],
-                                    //         "count": count,
-                                    //       }).then((value) {
-                                    //         Utils.toastMessage(
-                                    //             "Items added to cart");
-                                    //       }).catchError((error) {
-                                    //         Utils.toastMessage(
-                                    //             "Failed to add item: $error");
-                                    //       });
-                                    //     },
-                                    //     child: Container(
-                                    //       height: 36,
-                                    //       width: 36,
-                                    //       decoration: BoxDecoration(
-                                    //         color: Colors.green,
-                                    //         shape: BoxShape.circle,
-                                    //       ),
-                                    //       child: const Icon(Icons.add,
-                                    //           color: Colors.white),
-                                    //     ),
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                               ),
@@ -372,63 +335,71 @@ class _HomeState extends State<Home> {
                                 Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: CachedNetworkImage(
-                                          imageUrl: ds["image"],
-                                          height: 80,
-                                          width: 80,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              const LinearProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(ds["name"],
-                                              style: AppWidgets
-                                                  .semiBoldTextFieldStyle()),
-                                          const SizedBox(height: 5),
-                                          Text("Fresh and Healthy",
-                                              style: AppWidgets
-                                                  .lightTextFieldStyle()),
-                                          const SizedBox(height: 5),
-                                          Text("Rs. ${ds["price"]}",
-                                              style: AppWidgets
-                                                  .semiBoldTextFieldStyle()),
-                                        ],
-                                      ),
+                                      Row(
+                                       children: [
+                                         ClipRRect(
+                                           borderRadius: BorderRadius.circular(20),
+                                           child: CachedNetworkImage(
+                                             imageUrl: ds["image"],
+                                             height: 80,
+                                             width: 80,
+                                             fit: BoxFit.cover,
+                                             placeholder: (context, url) =>
+                                             const LinearProgressIndicator(),
+                                             errorWidget: (context, url, error) =>
+                                             const Icon(Icons.error),
+                                           ),
+                                         ),
+                                         const SizedBox(width: 20),
+                                         Column(
+                                           crossAxisAlignment:
+                                           CrossAxisAlignment.start,
+                                           children: [
+                                             Text(ds["name"],
+                                                 style: AppWidgets
+                                                     .semiBoldTextFieldStyle()),
+                                             const SizedBox(height: 5),
+                                             Text("Fresh and Healthy",
+                                                 style: AppWidgets
+                                                     .lightTextFieldStyle()),
+                                             const SizedBox(height: 5),
+                                             Text("Rs. ${ds["price"]}",
+                                               style: AppWidgets.semiBoldTextFieldStyle(),
+                                             ),
+                                           ],
+                                         ),
+                                       ],
+                                     ),
+                                      IconButton(
+                                        onPressed: ()async{
+                                          if(ds["favourite"].contains(FirebaseAuth.instance.currentUser!.uid)){
+                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+                                              "favourite": FieldValue.arrayRemove([ds.id]),
+                                            });
+                                            FirebaseFirestore.instance.collection("products").doc(ds.id).update({
+                                              "favourite": FieldValue.arrayRemove([
+                                                FirebaseAuth.instance.currentUser!.uid.toString()
+                                              ]),
+                                            });
+                                          }else{
+                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+                                              "favourite": FieldValue.arrayUnion([ds.id]),
+                                            });
+                                            FirebaseFirestore.instance.collection("products").doc(ds.id).update({
+                                              "favourite": FieldValue.arrayUnion([
+                                                FirebaseAuth.instance.currentUser!.uid.toString()
+                                              ]),
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(ds["favourite"].contains(FirebaseAuth.instance.currentUser!.uid) ? CupertinoIcons.heart_fill : CupertinoIcons.heart,color: Colors.deepPurple,),
+                                      )
                                     ],
                                   ),
                                 ),
-                                // Positioned(
-                                //   right: 10, // Distance from the right
-                                //   bottom: 10, // Distance from the bottom
-                                //   child: GestureDetector(
-                                //     onTap: () {
-                                //       // Add the product to the cart or perform desired action
-                                //       print("Added to cart: ${ds['name']}");
-                                //     },
-                                //     child: Container(
-                                //       height: 36, // Circular button size
-                                //       width: 36,
-                                //       decoration: BoxDecoration(
-                                //         color: Colors.green,
-                                //         shape: BoxShape.circle,
-                                //       ),
-                                //       child: const Icon(Icons.add,
-                                //           color: Colors.white),
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),

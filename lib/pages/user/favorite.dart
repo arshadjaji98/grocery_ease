@@ -80,19 +80,12 @@ class _FavoriteState extends State<Favorite> {
                               ? CupertinoIcons.heart_fill
                               : CupertinoIcons.heart,
                           onPressed: () {
-                            FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
-                                .update({
+                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
                               "favourite": FieldValue.arrayRemove([product.id]),
                             });
-                            FirebaseFirestore.instance
-                                .collection("products")
-                                .doc(product["id"])
-                                .update({
+                            FirebaseFirestore.instance.collection("products").doc(product["id"]).update({
                               "favourite": FieldValue.arrayRemove([
-                                FirebaseAuth.instance.currentUser!.uid
-                                    .toString()
+                                FirebaseAuth.instance.currentUser!.uid.toString()
                               ]),
                             });
                           },
