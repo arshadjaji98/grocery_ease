@@ -346,6 +346,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                           ),
                         ],
                       ),
+                      phoneNumber: snapshot.data!.docs[index]["phoneNumber"],
+                      address: snapshot.data!.docs[index]["currentAddress"],
                     ),
                   );
                 },

@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class OrderUserListWidget extends StatefulWidget {
-  const OrderUserListWidget({required this.userId,required this.expendedTile,super.key});
+  const OrderUserListWidget({required this.userId,required this.expendedTile,required this.phoneNumber,required this.address,super.key});
   final String userId;
+  final String phoneNumber;
+  final String address;
   final Widget expendedTile;
   @override
   State<OrderUserListWidget> createState() => _OrderUserListWidgetState();
@@ -38,8 +40,8 @@ class _OrderUserListWidgetState extends State<OrderUserListWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(data["name"],style: const TextStyle(fontSize: 18,fontWeight: FontWeight.w700),),
-                            Text(data["phone"],style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w300,color: Colors.grey),),
-                            Text(data["address"],style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w300,color: Colors.grey),),
+                            Text(widget.phoneNumber.toString(),style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w300,color: Colors.grey),),
+                            Text(widget.address.toString(),style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w300,color: Colors.grey),),
                           ],
                         ),
 

@@ -11,7 +11,8 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  String selectPayment = "Cash";
+  TextEditingController phoneNumber = TextEditingController();
+  TextEditingController address = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -196,31 +197,16 @@ class _CartState extends State<Cart> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              ListTile(
-                                leading: const Icon(
-                                    CupertinoIcons.money_dollar_circle),
-                                title: const Text("Cash on Delivery"),
-                                trailing: Radio<String>(
-                                  value: "Cash",
-                                  groupValue: selectPayment,
-                                  onChanged: (value) {
-                                    setModalState(() {
-                                      selectPayment = value!;
-                                    });
-                                  },
+                              TextFormField(
+                                controller: address,
+                                decoration: InputDecoration(
+                                  hintText: "Enter Current address",
                                 ),
                               ),
-                              ListTile(
-                                leading: const Icon(CupertinoIcons.creditcard),
-                                title: const Text("Credit Card"),
-                                trailing: Radio<String>(
-                                  value: "Credit",
-                                  groupValue: selectPayment,
-                                  onChanged: (value) {
-                                    setModalState(() {
-                                      selectPayment = value!;
-                                    });
-                                  },
+                              TextFormField(
+                                controller: phoneNumber,
+                                decoration: InputDecoration(
+                                    hintText: "Enter Contact Number"
                                 ),
                               ),
                               Padding(
@@ -271,7 +257,9 @@ class _CartState extends State<Cart> {
                                                       .toString()))
                                                   .toInt();
                                         }),
-                                        "paymentMethod": selectPayment,
+                                        "paymentMethod": "Cash",
+                                        "currentAddress" : address.text,
+                                        "phoneNumber" : phoneNumber.text,
                                         "timestamp": FieldValue.serverTimestamp(),
                                       });
 
@@ -295,7 +283,9 @@ class _CartState extends State<Cart> {
                                         await FirebaseFirestore.instance.collection("users").doc(adminId).collection("orders").doc(orderId.id).set({
                                           "items": itemsForAdmin,
                                           "totalAmount": totalAmount,
-                                          "paymentMethod": selectPayment,
+                                          "paymentMethod": "Cash",
+                                          "currentAddress" : address.text,
+                                          "phoneNumber" : phoneNumber.text,
                                           "timestamp":
                                           FieldValue.serverTimestamp(),
                                           "userId": FirebaseAuth
