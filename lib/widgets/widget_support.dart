@@ -32,4 +32,7 @@ class AppWidgets {
       fontFamily: 'Poppins',
     );
   }
+
+  static void showSnackbar(BuildContext context, String s,
+      {required bool success}) {}
 }

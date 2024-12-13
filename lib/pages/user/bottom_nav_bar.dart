@@ -23,14 +23,17 @@ class _BottomNavState extends State<BottomNav> {
     switch (index) {
       case 0:
         return Home(
-            image: '',
-            name: '',
-            details: '',
-            price: '',
-            id: '',
-            adminId: '',
-            stock: '',
-            type: '');
+          image: '',
+          name: '',
+          details: '',
+          price: '',
+          id: '',
+          adminId: '',
+          stock: '',
+          type: '',
+          favourite: [],
+          count: 1,
+        );
       case 1:
         return Cart();
       case 2:
@@ -48,7 +51,9 @@ class _BottomNavState extends State<BottomNav> {
             id: '',
             adminId: '',
             stock: '',
-            type: '');
+            type: '',
+            favourite: [],
+            count: 1);
     }
   }
 
