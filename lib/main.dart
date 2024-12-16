@@ -4,6 +4,7 @@ import 'package:groceryease_delivery_application/firebase_options.dart';
 import 'package:groceryease_delivery_application/pages/home.dart';
 import 'package:groceryease_delivery_application/pages/registration/login.dart';
 import 'package:groceryease_delivery_application/pages/splash/splash_screen.dart';
+import 'package:groceryease_delivery_application/pages/super_admin/super_admin_home_screen.dart';
 import 'package:groceryease_delivery_application/pages/user/bottom_nav_bar.dart';
 import 'package:groceryease_delivery_application/services/auth_gate.dart';
 
@@ -36,6 +37,6 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           cardTheme: const CardTheme(color: Colors.white),
         ),
-        home: const BottomNav());
+        home: const SuperAdminHomeScreen());
   }
 }
