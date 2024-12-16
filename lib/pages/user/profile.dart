@@ -172,17 +172,8 @@ class _ProfileState extends State<Profile> {
                           padding: const EdgeInsets.only(
                               top: 40.0, right: 15, left: 15),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                "Welcome  " + data["name"],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 23.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
                               Container(
                                 height: 35,
                                 width: 35,

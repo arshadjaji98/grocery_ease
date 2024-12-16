@@ -30,6 +30,40 @@ class Details extends StatefulWidget {
 
 class _DetailsState extends State<Details> {
   int count = 1;
+  bool _isLoading = false;
+  void _addToCart() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("card")
+          .doc(widget.id)
+          .set({
+        "image": widget.image,
+        "name": widget.name,
+        "details": widget.details,
+        "id": widget.id,
+        "adminId": widget.adminId,
+        "price": widget.price,
+        "type": widget.type,
+        "count": 1,
+      });
+
+      // Show success message
+      Utils.toastMessage("This Product Added to Cart");
+    } catch (e) {
+      // Handle any errors
+      Utils.toastMessage("Failed to add product to cart: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -88,9 +122,8 @@ class _DetailsState extends State<Details> {
                                 Container(
                                   margin: const EdgeInsets.only(right: 10),
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.white,
-                                    ),
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: IconButton(
@@ -98,7 +131,7 @@ class _DetailsState extends State<Details> {
                                       Navigator.pop(context);
                                     },
                                     icon: Icon(Icons.arrow_back,
-                                        color: Colors.white),
+                                        color: Colors.grey.shade300),
                                   ),
                                 ),
                                 SizedBox(
@@ -107,9 +140,8 @@ class _DetailsState extends State<Details> {
                                 Container(
                                   margin: const EdgeInsets.only(right: 10),
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.white,
-                                    ),
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: IconButton(
@@ -158,7 +190,7 @@ class _DetailsState extends State<Details> {
                                           "Item added to favorite");
                                     },
                                     icon: Icon(Icons.favorite,
-                                        color: Colors.white),
+                                        color: Colors.grey.shade300),
                                   ),
                                 ),
                               ],
@@ -283,7 +315,10 @@ class _DetailsState extends State<Details> {
                           ),
                           const SizedBox(height: 10),
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection("products").where("type", isEqualTo: widget.type).snapshots(),
+                            stream: FirebaseFirestore.instance
+                                .collection("products")
+                                .where("type", isEqualTo: widget.type)
+                                .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasError) {
                                 return Center(
@@ -378,31 +413,16 @@ class _DetailsState extends State<Details> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: GestureDetector(
-                      onTap: () {
-                        FirebaseFirestore.instance
-                            .collection("users")
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .collection("card")
-                            .doc(widget.id)
-                            .set({
-                          "image": widget.image,
-                          "name": widget.name,
-                          "details": widget.details,
-                          "id": widget.id,
-                          "adminId": widget.adminId,
-                          "price": widget.price,
-                          "type": widget.type,
-                          "count": count,
-                        }).then((value) {
-                          count == 1;
-                          Utils.toastMessage("This Product Add to Cart");
-                        });
-                      },
+                      onTap: _isLoading
+                          ? null
+                          : _addToCart, // Disable tap if loading
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Rs. " + widget.price,
-                              style: AppWidgets.boldTextFieldStyle()),
+                          Text(
+                            "Rs. " + widget.price,
+                            style: AppWidgets.boldTextFieldStyle(),
+                          ),
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             padding: const EdgeInsets.only(
@@ -412,18 +432,22 @@ class _DetailsState extends State<Details> {
                               left: 5,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0XFF8a4af3),
+                              color: _isLoading
+                                  ? Colors.grey
+                                  : const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
-                              child: Text(
-                                "Add To Cart",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Poppins',
-                                  fontSize: 20,
-                                ),
-                              ),
+                              child: _isLoading
+                                  ? SpinKitCircle(size: 30, color: Colors.white)
+                                  : const Text(
+                                      "Add To Cart",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Poppins',
+                                        fontSize: 20,
+                                      ),
+                                    ),
                             ),
                           ),
                         ],

@@ -1,18 +1,17 @@
 // ignore_for_file: override_on_non_overriding_member
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:groceryease_delivery_application/pages/user/details.dart';
-import 'package:groceryease_delivery_application/pages/user/favorite.dart';
-import 'package:groceryease_delivery_application/widgets/utills.dart';
 import 'package:groceryease_delivery_application/widgets/widget_support.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class Home extends StatefulWidget {
   final String image, name, details, price, id, adminId, stock, type;
+  final List favourite;
+  final int count;
+
   const Home(
       {super.key,
       required this.image,
@@ -22,36 +21,99 @@ class Home extends StatefulWidget {
       required this.id,
       required this.adminId,
       required this.stock,
-      required this.type});
+      required this.type,
+      required this.favourite,
+      required this.count});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  @override
-  TextEditingController searchController = TextEditingController();
+  String? username;
 
-  List<String> types = ["Fruit", "Meat", "Backery", "Beverages", "Oil"];
-  String? selectType;
+  List<String> types = [
+    "Fruit",
+    "Meat",
+    "Bakery",
+    "Beverages",
+    "Oil",
+    "Vegetables",
+    "Dry Fruits",
+    "Snacks",
+    "Honey"
+  ];
+
   List<String> typeImage = [
     "assets/images/fruits.png",
     "assets/images/meat.png",
     "assets/images/backery.png",
     "assets/images/beverages.png",
     "assets/images/oil.png",
+    "assets/images/Vegetables.png",
+    "assets/images/Dry Fruits.png",
+    "assets/images/Snacks.png",
+    "assets/images/Honey.png",
   ];
-
+  TextEditingController searchController = TextEditingController();
   String searchTerm = '';
-
+  String? selectType;
+  int count = 1;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    fetchUsername();
+    searchController.addListener(() {
+      setState(() {
+        searchTerm = searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  Future<void> fetchUsername() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+        setState(() {
+          username = userDoc.data()?['name'] ?? 'User';
+        });
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> handleRefresh() async {
     return Future.delayed(Duration.zero);
+  }
+
+  Stream<QuerySnapshot> getFilteredProducts() {
+    final collection = FirebaseFirestore.instance.collection("products");
+
+    if (searchTerm.isNotEmpty) {
+      return collection
+          .where("name_lowercase", isGreaterThanOrEqualTo: searchTerm)
+          .where("name_lowercase", isLessThanOrEqualTo: searchTerm + '\uf8ff')
+          .snapshots();
+    }
+
+    if (selectType != null) {
+      return collection.where("type", isEqualTo: selectType).snapshots();
+    }
+
+    return collection.snapshots();
   }
 
   @override
@@ -64,49 +126,41 @@ class _HomeState extends State<Home> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Hello and Welcome!",
-                    style: AppWidgets.boldTextFieldStyle(),
+              Text.rich(
+                TextSpan(
+                  text: "Welcome, ",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 23.0,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color(0XFF8a4af3),
-                        ),
-                        borderRadius: BorderRadius.circular(4)),
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Favorite()));
-                        },
-                        icon: const Icon(
-                          Icons.favorite,
-                          color: Color(0XFF8a4af3),
-                        )),
-                  ),
-                ],
+                  children: [
+                    TextSpan(
+                      text: username ?? '...',
+                      style: const TextStyle(
+                        color: Colors
+                            .deepPurple, // Optional styling for the username
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 20),
+
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Color(0XFF8a4af3),
-                    ),
+                    border: Border.all(color: const Color(0XFF8a4af3)),
                   ),
                   child: TextFormField(
                     controller: searchController,
-                    // onChanged: onSearchChanged,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       contentPadding: EdgeInsets.symmetric(vertical: 12),
                       suffixIcon: Icon(Icons.search),
                       hintText: 'Search here',
@@ -115,17 +169,10 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
-              // Spacer(),
-              Text(
-                "Delicious Food",
-                style: AppWidgets.headerTextFieldStyle(),
-              ),
-              Text(
-                "Discover and Get Great Food",
-                style: AppWidgets.lightTextFieldStyle(),
-              ),
-              const SizedBox(height: 20),
+
+              // Category Section
               SizedBox(
                 height: 50,
                 child: ListView.builder(
@@ -134,8 +181,9 @@ class _HomeState extends State<Home> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        selectType = types[index];
-                        setState(() {});
+                        setState(() {
+                          selectType = types[index];
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(5),
@@ -154,12 +202,14 @@ class _HomeState extends State<Home> {
                           ),
                           child: Row(
                             children: [
-                              Image.asset(typeImage[index],
-                                  height: 20, width: 20),
-                              SizedBox(width: 5),
+                              Image.asset(
+                                typeImage[index],
+                                height: 20,
+                                width: 20,
+                              ),
+                              const SizedBox(width: 5),
                               Text(
                                 types[index],
-                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   color: selectType == types[index]
@@ -177,132 +227,43 @@ class _HomeState extends State<Home> {
               ),
 
               const SizedBox(height: 30),
-              Container(
-                height: 200,
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("products")
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: SpinKitWave(
-                              color: Color(0XFF8a4af3), size: 30.0));
-                    }
-                    if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-                      return const Center(
-                          child: Text("No items available",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)));
-                    }
 
-                    return ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: snapshot.data.docs.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot ds = snapshot.data.docs[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Details(
-                                  image: ds['image'],
-                                  name: ds['name'],
-                                  details: ds['detail'],
-                                  price: ds['price'].toString(),
-                                  id: ds['id'],
-                                  stock: ds['quantity'].toString(),
-                                  adminId: ds['adminId'],
-                                  type: ds['type'],
-                                  favourite: ds["favourite"],
-                                ),
-                              ),
-                            );
-                          },
-                          child: SizedBox(
-                            height: 20,
-                            child: Container(
-                              margin: const EdgeInsets.all(4),
-                              child: Material(
-                                color: Colors.white,
-                                elevation: 5,
-                                borderRadius: BorderRadius.circular(20),
-                                child: Stack(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 12),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            child: CachedNetworkImage(
-                                              imageUrl: ds["image"],
-                                              height: 100,
-                                              width: 100,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  LinearProgressIndicator(),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.error),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(ds["name"],
-                                              style: AppWidgets
-                                                  .boldTextFieldStyle(),
-                                              textAlign: TextAlign.center),
-                                          const SizedBox(height: 4),
-                                          Text("Rs. ${ds["price"]}",
-                                              style: AppWidgets
-                                                  .semiBoldTextFieldStyle(),
-                                              textAlign: TextAlign.center),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 30),
+              // Product List
               StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("products")
-                    .where("type", isEqualTo: selectType)
-                    .snapshots(),
+                stream: getFilteredProducts(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                        child:
-                            SpinKitWave(color: Color(0XFF8a4af3), size: 30.0));
+                      child: SpinKitWave(color: Color(0XFF8a4af3), size: 30.0),
+                    );
                   }
                   if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
                     return const Center(
-                        child: Text("No items available",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)));
+                      child: Text(
+                        "No items available",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
                   }
+                  double screenWidth = MediaQuery.of(context).size.width;
+                  int crossAxisCount = screenWidth > 600 ? 4 : 3;
+                  double childAspectRatio = screenWidth > 600 ? 0.7 : 0.6;
 
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
+                  return GridView.builder(
+                    padding: const EdgeInsets.only(
+                        left: 5, right: 5, bottom: 10, top: 10),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: childAspectRatio,
+                    ),
                     itemCount: snapshot.data.docs.length,
                     shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       DocumentSnapshot ds = snapshot.data.docs[index];
                       return GestureDetector(
@@ -325,83 +286,45 @@ class _HomeState extends State<Home> {
                           );
                         },
                         child: Container(
-                          margin: const EdgeInsets.only(right: 20, bottom: 20),
-                          child: Material(
-                            elevation: 5,
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
-                            child: Stack(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                       children: [
-                                         ClipRRect(
-                                           borderRadius: BorderRadius.circular(20),
-                                           child: CachedNetworkImage(
-                                             imageUrl: ds["image"],
-                                             height: 80,
-                                             width: 80,
-                                             fit: BoxFit.cover,
-                                             placeholder: (context, url) =>
-                                             const LinearProgressIndicator(),
-                                             errorWidget: (context, url, error) =>
-                                             const Icon(Icons.error),
-                                           ),
-                                         ),
-                                         const SizedBox(width: 20),
-                                         Column(
-                                           crossAxisAlignment:
-                                           CrossAxisAlignment.start,
-                                           children: [
-                                             Text(ds["name"],
-                                                 style: AppWidgets
-                                                     .semiBoldTextFieldStyle()),
-                                             const SizedBox(height: 5),
-                                             Text("Fresh and Healthy",
-                                                 style: AppWidgets
-                                                     .lightTextFieldStyle()),
-                                             const SizedBox(height: 5),
-                                             Text("Rs. ${ds["price"]}",
-                                               style: AppWidgets.semiBoldTextFieldStyle(),
-                                             ),
-                                           ],
-                                         ),
-                                       ],
-                                     ),
-                                      IconButton(
-                                        onPressed: ()async{
-                                          if(ds["favourite"].contains(FirebaseAuth.instance.currentUser!.uid)){
-                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
-                                              "favourite": FieldValue.arrayRemove([ds.id]),
-                                            });
-                                            FirebaseFirestore.instance.collection("products").doc(ds.id).update({
-                                              "favourite": FieldValue.arrayRemove([
-                                                FirebaseAuth.instance.currentUser!.uid.toString()
-                                              ]),
-                                            });
-                                          }else{
-                                            FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).update({
-                                              "favourite": FieldValue.arrayUnion([ds.id]),
-                                            });
-                                            FirebaseFirestore.instance.collection("products").doc(ds.id).update({
-                                              "favourite": FieldValue.arrayUnion([
-                                                FirebaseAuth.instance.currentUser!.uid.toString()
-                                              ]),
-                                            });
-                                          }
-                                        },
-                                        icon: Icon(ds["favourite"].contains(FirebaseAuth.instance.currentUser!.uid) ? CupertinoIcons.heart_fill : CupertinoIcons.heart,color: Colors.deepPurple,),
-                                      )
-                                    ],
-                                  ),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  spreadRadius: 2)
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: CachedNetworkImage(
+                                  imageUrl: ds["image"],
+                                  height: 100,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      const LinearProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                ds["name"],
+                                style: AppWidgets.semiBoldTextFieldStyle(),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Rs. ${ds["price"]}",
+                                style: AppWidgets.semiBoldTextFieldStyle(),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -409,36 +332,6 @@ class _HomeState extends State<Home> {
                   );
                 },
               )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildResultCard(data) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data['Name'],
-                    style: AppWidgets.semiBoldTextFieldStyle(),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
