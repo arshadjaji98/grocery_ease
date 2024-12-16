@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groceryease_delivery_application/widgets/utills.dart';
@@ -43,7 +45,7 @@ class _DetailsState extends State<Details> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            margin: EdgeInsets.only(top: 20),
+            margin: const EdgeInsets.only(top: 20),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +102,7 @@ class _DetailsState extends State<Details> {
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
-                                    icon: Icon(Icons.arrow_back,
+                                    icon: const Icon(Icons.arrow_back,
                                         color: Colors.white),
                                   ),
                                 ),
@@ -160,7 +162,7 @@ class _DetailsState extends State<Details> {
                                       Utils.toastMessage(
                                           "Item added to favorite");
                                     },
-                                    icon: Icon(Icons.favorite,
+                                    icon: const Icon(Icons.favorite,
                                         color: Colors.white),
                                   ),
                                 ),
@@ -215,7 +217,9 @@ class _DetailsState extends State<Details> {
                               count++;
                               setState(() {});
                             } else {
-                              print("Your Stock is $count");
+                              if (kDebugMode) {
+                                print("Your Stock is $count");
+                              }
                             }
                           },
                           child: Container(
@@ -264,7 +268,7 @@ class _DetailsState extends State<Details> {
                           "About",
                           style: AppWidgets.boldTextFieldStyle(),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           widget.details,
                           maxLines: 4,
@@ -273,7 +277,7 @@ class _DetailsState extends State<Details> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SingleChildScrollView(
@@ -291,6 +295,16 @@ class _DetailsState extends State<Details> {
                                 .where("type", isEqualTo: widget.type)
                                 .snapshots(),
                             builder: (context, snapshot) {
+<<<<<<< Updated upstream
+=======
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: SpinKitWave(
+                                      color: Color(0XFF8a4af3), size: 30.0),
+                                );
+                              }
+>>>>>>> Stashed changes
                               if (snapshot.hasError) {
                                 return Center(
                                   child: Text(
@@ -421,10 +435,15 @@ class _DetailsState extends State<Details> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+<<<<<<< Updated upstream
                           Text(
                             "Rs. ${widget.price}",
                             style: AppWidgets.boldTextFieldStyle(),
                           ),
+=======
+                          Text("Rs. ${widget.price}",
+                              style: AppWidgets.boldTextFieldStyle()),
+>>>>>>> Stashed changes
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             padding: const EdgeInsets.only(
@@ -437,6 +456,7 @@ class _DetailsState extends State<Details> {
                               color: const Color(0XFF8a4af3),
                               borderRadius: BorderRadius.circular(8),
                             ),
+<<<<<<< Updated upstream
                             child: Center(
                               child: isLoading
                                   ? SizedBox(
@@ -454,6 +474,17 @@ class _DetailsState extends State<Details> {
                                         fontSize: 20,
                                       ),
                                     ),
+=======
+                            child: const Center(
+                              child: Text(
+                                "Add To Cart",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                  fontSize: 20,
+                                ),
+                              ),
+>>>>>>> Stashed changes
                             ),
                           ),
                         ],
